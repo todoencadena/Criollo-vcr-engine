@@ -1,4 +1,4 @@
-const { hashAnimal, hashEnvironment } = require('../packages/privacy/hashing');
+const { hashAnimal, hashEnvironment, hashOperator } = require('../packages/privacy/hashing');
 
 describe('hashAnimal', () => {
     test('should generate consistent hash for same inputs', () => {
@@ -132,6 +132,66 @@ describe('hashEnvironment', () => {
     test('should throw error if salt is missing', () => {
         expect(() => {
             hashEnvironment('Refugio Patitas', 2026, '');
+        }).toThrow('All parameters are required');
+    });
+});
+
+describe('hashOperator', () => {
+    test('should generate consistent hash for same inputs', () => {
+        const hash1 = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+        const hash2 = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+
+        expect(hash1).toBe(hash2);
+    });
+
+    test('should generate different hash for different license', () => {
+        const hash1 = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+        const hash2 = hashOperator('VET-CA-789012', 'Florida', 'secret123');
+
+        expect(hash1).not.toBe(hash2);
+    });
+
+    test('should generate different hash for different jurisdiction', () => {
+        const hash1 = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+        const hash2 = hashOperator('VET-FL-123456', 'California', 'secret123');
+
+        expect(hash1).not.toBe(hash2);
+    });
+
+    test('should generate different hash for different salt', () => {
+        const hash1 = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+        const hash2 = hashOperator('VET-FL-123456', 'Florida', 'secret456');
+
+        expect(hash1).not.toBe(hash2);
+    });
+
+    test('hash should be 64 characters long', () => {
+        const hash = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+
+        expect(hash.length).toBe(64);
+    });
+
+    test('hash should be hexadecimal', () => {
+        const hash = hashOperator('VET-FL-123456', 'Florida', 'secret123');
+
+        expect(/^[a-f0-9]+$/.test(hash)).toBe(true);
+    });
+
+    test('should throw error if licenseNumber is missing', () => {
+        expect(() => {
+            hashOperator('', 'Florida', 'secret123');
+        }).toThrow('All parameters are required');
+    });
+
+    test('should throw error if jurisdiction is missing', () => {
+        expect(() => {
+            hashOperator('VET-FL-123456', '', 'secret123');
+        }).toThrow('All parameters are required');
+    });
+
+    test('should throw error if salt is missing', () => {
+        expect(() => {
+            hashOperator('VET-FL-123456', 'Florida', '');
         }).toThrow('All parameters are required');
     });
 });

@@ -34,7 +34,24 @@ function hashEnvironment(name, year, salt) {
     return crypto.createHash('sha256').update(data).digest('hex');
 }
 
+/**
+ * Hash an operator's identity using SHA-256
+ * @param {string} licenseNumber - The operator's professional license number
+ * @param {string} jurisdiction - State/country where operator is licensed
+ * @param {string} salt - Secret salt for additional security
+ * @returns {string} 64-character hexadecimal hash
+ */
+function hashOperator(licenseNumber, jurisdiction, salt) {
+    if (!licenseNumber || !jurisdiction || !salt) {
+        throw new Error('All parameters are required: licenseNumber, jurisdiction, salt');
+    }
+
+    const data = `${licenseNumber}-${jurisdiction}-${salt}`;
+    return crypto.createHash('sha256').update(data).digest('hex');
+}
+
 module.exports = {
     hashAnimal,
-    hashEnvironment
+    hashEnvironment,
+    hashOperator
 };
