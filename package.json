@@ -4,7 +4,7 @@
   "description": "Privacy-first VCR Minting Engine for verifiable animal care events",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
