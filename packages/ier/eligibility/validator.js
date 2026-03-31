@@ -132,7 +132,7 @@ async function evaluateEnvironment(environmentId, environmentData) {
 
         // Get all active criteria
         const criteriaResult = await client.query(
-            'SELECT * FROM eligibility_criteria WHERE is_active = true ORDER BY criterion_name'
+            'SELECT * FROM eligibility_criteria WHERE is_active = true ORDER BY criterion_type, criterion_name'
         );
         const criteria = criteriaResult.rows;
 
@@ -168,6 +168,7 @@ async function evaluateEnvironment(environmentId, environmentData) {
 
             evaluations.push({
                 criterion: criterion.criterion_name,
+                criterion_type: criterion.criterion_type,
                 points_earned: evaluation.points,
                 max_points: criterion.max_points,
                 weight: parseFloat(criterion.weight),
