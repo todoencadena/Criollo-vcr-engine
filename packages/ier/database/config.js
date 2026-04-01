@@ -3,7 +3,10 @@
  * PostgreSQL connection settings for IER
  */
 
-const { Pool } = require('pg');
+const { Pool, types } = require('pg');
+
+// Return DATE columns as plain strings ('YYYY-MM-DD') instead of Date objects
+types.setTypeParser(1082, val => val);
 
 /**
  * Database connection pool configuration
