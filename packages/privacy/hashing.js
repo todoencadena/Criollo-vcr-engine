@@ -49,9 +49,53 @@ function hashOperator(licenseNumber, jurisdiction, salt) {
     const data = `${licenseNumber}-${jurisdiction}-${salt}`;
     return crypto.createHash('sha256').update(data).digest('hex');
 }
+/**
+ * Generate a cryptographic hash for a care event
+ * Combines event data with salt for unique, deterministic hashing
+ * 
+ * @param {string} animalHash - SHA-256 hash of the animal
+ * @param {string} environmentHash - SHA-256 hash of the environment
+ * @param {string} eventType - Type of event (intake/medical/care/transfer/outcome)
+ * @param {string} eventTimestamp - ISO timestamp of the event
+ * @param {string} salt - Cryptographic salt
+ * @returns {string} SHA-256 hash (64 character hex string)
+ */
+function hashCareEvent(animalHash, environmentHash, eventType, eventTimestamp, salt) {
+    if (!animalHash || !environmentHash || !eventType || !eventTimestamp || !salt) {
+        throw new Error('All parameters are required: animalHash, environmentHash, eventType, eventTimestamp, salt');
+    }
 
+    // Validate hash format (64 character hex strings)
+    const hashRegex = /^[a-f0-9]{64}$/;
+    if (!hashRegex.test(animalHash)) {
+        throw new Error('Invalid animalHash format - must be 64 character hex string');
+    }
+    if (!hashRegex.test(environmentHash)) {
+        throw new Error('Invalid environmentHash format - must be 64 character hex string');
+    }
+
+    // Validate event type
+    const validTypes = ['intake', 'medical', 'care', 'transfer', 'outcome'];
+    if (!validTypes.includes(eventType.toLowerCase())) {
+        throw new Error(`Invalid event type - must be one of: ${validTypes.join(', ')}`);
+    }
+
+    // Normalize inputs
+    const normalizedType = eventType.toLowerCase().trim();
+    const normalizedTimestamp = eventTimestamp.trim();
+    const normalizedSalt = salt.trim();
+
+    // Combine all components
+    const combined = `${animalHash}|${environmentHash}|${normalizedType}|${normalizedTimestamp}|${normalizedSalt}`;
+
+    // Generate SHA-256 hash
+    const hash = crypto.createHash('sha256').update(combined).digest('hex');
+
+    return hash;
+}
 module.exports = {
     hashAnimal,
     hashEnvironment,
-    hashOperator
+    hashOperator,
+    hashCareEvent
 };
