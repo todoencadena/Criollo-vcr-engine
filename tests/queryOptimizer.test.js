@@ -271,3 +271,27 @@ describe('getOptimalPoolConfig', () => {
     expect(config.max).toBe(5);
   });
 });
+describe('generatePerformanceReport', () => {
+  test('returns complete report with all sections', async () => {
+    const existingRows = INDEX_DEFINITIONS.map(idx => ({
+      indexname: idx.name,
+      tablename: 'care_events',
+      indexdef:  'CREATE INDEX...',
+    }));
+    const pool   = makeMockPool(existingRows);
+    const config = { max: 10, min: 2, idleTimeoutMillis: 30000, connectionTimeoutMillis: 5000 };
+    const result = await generatePerformanceReport(pool, config);
+    expect(result.timestamp).toBeDefined();
+    expect(result.indexes).toBeDefined();
+    expect(result.pool).toBeDefined();
+    expect(result.recommendations).toBeDefined();
+    expect(Array.isArray(result.recommendations)).toBe(true);
+  });
+
+  test('includes missing index recommendations when indexes absent', async () => {
+    const pool   = makeMockPool([]);
+    const result = await generatePerformanceReport(pool, {});
+    expect(result.indexes.missing).toBeGreaterThan(0);
+    expect(result.recommendations.length).toBeGreaterThan(0);
+  });
+});
