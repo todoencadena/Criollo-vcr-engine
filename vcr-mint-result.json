@@ -1,0 +1,15 @@
+{
+  "mintAddress": "JRtnkj4qouPryh9HTuN1yTrJmpMGKbJ4Nbp5CwYkcEy",
+  "signature": "9rAMocAbS98sHFrwjSf+OakbrCnjmosKBRYnl9Zp6C1YDV+K/ldMRQkGajjlg3ZTVhnNK5jT4XFr7qiFKdC+DA==",
+  "vcrHash": "82f8ec4127498c94038370255ba0fd92fcd6db152fb7a8de0a1806b0c0f844d2",
+  "attestationHash": "c3363dd4125bb003d40066898d56e6b052ff6d78740dce95651e26b9e5bed43d",
+  "eventHash": "91cb9bb8a4eaba28e5d757546f20f28b655702d6666507a643b9095433e7f42f",
+  "animalHash": "0f71f709da3bf9bf0d2105e40a10153b7d26f88e5ac8a76a1f6d58151021cc2d",
+  "environmentHash": "9f3bf7ec0b4d8191c2af7f01509e271d9b7d8e63544779286e6682ada32630ec",
+  "operatorHash": "be7c1c1afee611032514dfd41bc7d598b10bb9d8e0368daf9c47716c50c6c4cb",
+  "operatorRole": "VetTechnician",
+  "attestedAt": "2026-04-16T03:16:46.372Z",
+  "witnessedAt": "2026-04-16T03:16:46.373Z",
+  "network": "devnet",
+  "timestamp": "2026-04-16T03:16:59.324Z"
+}
