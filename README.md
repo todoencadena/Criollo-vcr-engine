@@ -2,6 +2,8 @@
 
 > Privacy-first blockchain infrastructure for verifiable animal care events
 
+**🌐 Web App:** https://criollo-vcr-engine-bcnv.vercel.app/
+
 ## 🎯 Status
 
 **Current Phase:** Phase 0 - Privacy Foundation ( COMPLETE (100%))
