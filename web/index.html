@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criollo VCR — Registro Verificable de Cuidado Animal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --border: rgba(0,0,0,0.1);
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --teal: #1D9E75;
+      --teal-light: #E1F5EE;
+      --teal-dark: #0F6E56;
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 640px; margin: 0 auto; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--teal);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+    }
+    .logo-text { font-size: 16px; font-weight: 600; }
+    .logo-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+    .lang-toggle { display: flex; gap: 4px; }
+    .lang-btn {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .lang-btn.active {
+      background: var(--teal);
+      color: white;
+      border-color: var(--teal);
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 1rem;
+    }
+    .section-title i { font-size: 15px; color: var(--teal); }
+
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+
+    input, select, textarea {
+      width: 100%;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--teal); }
+    textarea { resize: vertical; min-height: 72px; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .health-bar { display: flex; gap: 3px; margin-top: 4px; }
+    .health-btn {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 2px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .15s;
+    }
+    .health-btn.sel {
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border-color: var(--teal);
+    }
+
+    .status-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .status-chip {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .status-chip.sel {
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border-color: var(--teal);
+      font-weight: 500;
+    }
+
+    .hash-preview {
+      background: #f0f0f0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .875rem 1rem;
+      margin: 1rem 0;
+    }
+    .hash-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+    .hash-value { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text); word-break: break-all; opacity: .7; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--teal);
+      border: none;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s;
+    }
+    .submit-btn:hover { background: var(--teal-dark); }
+    .submit-btn i { font-size: 18px; }
+
+    .success {
+      background: var(--teal-light);
+      border: 1px solid var(--teal);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+    .success i { font-size: 36px; color: var(--teal); margin-bottom: 8px; display: block; }
+    .success-title { font-size: 16px; font-weight: 600; color: var(--teal-dark); margin-bottom: 4px; }
+    .success-sub { font-size: 13px; color: var(--teal-dark); opacity: .8; }
+    .success-hash { font-family: 'Courier New', monospace; font-size: 10px; color: var(--teal-dark); opacity: .7; margin-top: 10px; word-break: break-all; }
+
+    .footer { text-align: center; margin-top: 2rem; font-size: 12px; color: var(--text-muted); }
+    .footer a { color: var(--teal); text-decoration: none; }
+
+    @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-paw"></i></div>
+      <div>
+        <div class="logo-text">Criollo VCR</div>
+        <div class="logo-sub" id="logo-sub">Registro Verificable de Cuidado Animal</div>
+      </div>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')" id="btn-es">ES</button>
+      <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+    </div>
+  </div>
+
+  <!-- Ingreso -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-clipboard-list"></i><span id="t-intake">Datos de ingreso</span></div>
+    <div class="row">
+      <div class="field"><label id="l-date">Fecha de ingreso</label><input type="date" id="f-date"></div>
+      <div class="field"><label id="l-type">Tipo de animal</label>
+        <select id="f-type">
+          <option value="" id="o-select">Seleccionar...</option>
+          <option value="dog" id="o-dog">Perro</option>
+          <option value="cat" id="o-cat">Gato</option>
+          <option value="other" id="o-other">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label id="l-name">Nombre / ID temporal</label><input type="text" id="f-name" placeholder="Ej: Luna, #A-042"></div>
+      <div class="field"><label id="l-age">Edad estimada</label><input type="text" id="f-age" placeholder="Ej: 2 años"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label id="l-sex">Sexo</label>
+        <select id="f-sex">
+          <option value="">-</option>
+          <option value="M" id="o-male">Macho</option>
+          <option value="F" id="o-female">Hembra</option>
+        </select>
+      </div>
+      <div class="field"><label id="l-steril">Esterilización</label>
+        <select id="f-steril">
+          <option value="">-</option>
+          <option value="yes" id="o-yes">Sí</option>
+          <option value="no" id="o-no">No</option>
+          <option value="unknown" id="o-unk">Desconocido</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Médico -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-heart-rate-monitor"></i><span id="t-medical">Protocolo médico inicial</span></div>
+    <div class="field"><label id="l-vaccines">Vacunas suministradas</label><input type="text" id="f-vaccines" placeholder="Ej: Rabia, Parvovirus"></div>
+    <div class="field">
+      <label id="l-health">Estado de salud general</label>
+      <div class="health-bar">
+        <button class="health-btn" onclick="setHealth(1)">1</button>
+        <button class="health-btn" onclick="setHealth(2)">2</button>
+        <button class="health-btn" onclick="setHealth(3)">3</button>
+        <button class="health-btn" onclick="setHealth(4)">4</button>
+        <button class="health-btn" onclick="setHealth(5)">5</button>
+        <button class="health-btn" onclick="setHealth(6)">6</button>
+        <button class="health-btn" onclick="setHealth(7)">7</button>
+        <button class="health-btn" onclick="setHealth(8)">8</button>
+        <button class="health-btn" onclick="setHealth(9)">9</button>
+        <button class="health-btn" onclick="setHealth(10)">10</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label id="l-weight">Peso al ingreso (kg)</label><input type="number" id="f-weight" placeholder="Ej: 8.5" step="0.1" min="0"></div>
+      <div class="field"><label id="l-conditions">Condiciones médicas</label><input type="text" id="f-conditions" placeholder="Ej: Desnutrición"></div>
+    </div>
+    <div class="field"><label id="l-treatments">Tratamientos aplicados</label><textarea id="f-treatments" placeholder="Ej: Antiparasitario oral..."></textarea></div>
+  </div>
+
+  <!-- Nutrición -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-salad"></i><span id="t-nutrition">Plan nutricional</span></div>
+    <div class="row">
+      <div class="field"><label id="l-food">Tipo de alimentación</label><input type="text" id="f-food" placeholder="Ej: Croquetas, BARF"></div>
+      <div class="field"><label id="l-freq">Frecuencia de comidas</label>
+        <select id="f-freq">
+          <option value="">-</option>
+          <option value="1x" id="o-1x">1 vez al día</option>
+          <option value="2x" id="o-2x">2 veces al día</option>
+          <option value="3x" id="o-3x">3 veces al día</option>
+          <option value="4x" id="o-4x">4+ veces al día</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label id="l-suppl">Suplementos</label><input type="text" id="f-suppl" placeholder="Ej: Omega 3"></div>
+      <div class="field"><label id="l-allerg">Alergias alimentarias</label><input type="text" id="f-allerg" placeholder="Ej: Pollo, Trigo"></div>
+    </div>
+  </div>
+
+  <!-- Adopción -->
+  <div class="section">
+    <div class="section-title"><i class="ti ti-home-heart"></i><span id="t-adoption">Proceso de adopción</span></div>
+    <div class="field">
+      <label id="l-status">Estado actual</label>
+      <div class="status-row">
+        <button class="status-chip" onclick="setStatus('rehab')" id="chip-rehab">En rehabilitación</button>
+        <button class="status-chip" onclick="setStatus('ready')" id="chip-ready">Listo para adopción</button>
+        <button class="status-chip" onclick="setStatus('foster')" id="chip-foster">Hogar temporal</button>
+        <button class="status-chip" onclick="setStatus('adopted')" id="chip-adopted">Adoptado</button>
+      </div>
+    </div>
+    <div class="row" id="transfer-row" style="display:none">
+      <div class="field"><label id="l-transfer">Fecha de transferencia</label><input type="date" id="f-transfer"></div>
+      <div class="field"><label id="l-adopter">Datos del adoptante</label><input type="text" id="f-adopter" placeholder="ID o referencia"></div>
+    </div>
+    <div class="field"><label id="l-followup">Seguimiento post-adopción</label><textarea id="f-followup" placeholder="Notas..."></textarea></div>
+  </div>
+
+  <div class="hash-preview">
+    <div class="hash-label" id="hash-label">VCR Hash (se genera automáticamente)</div>
+    <div class="hash-value" id="hash-display">Completa el formulario para generar el hash...</div>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">
+    <i class="ti ti-shield-check"></i>
+    <span id="btn-submit">Registrar VCR en Criollo</span>
+  </button>
+
+  <div class="success" id="success-box">
+    <i class="ti ti-circle-check"></i>
+    <div class="success-title" id="s-title">¡Registro completado exitosamente!</div>
+    <div class="success-sub" id="s-sub">El VCR ha sido generado y está listo para mintarse en Base Sepolia.</div>
+    <div class="success-hash" id="s-hash"></div>
+  </div>
+
+  <div class="footer">
+    <p>Criollo VCR Engine &mdash; <a href="https://github.com/todoencadena/Criollo-vcr-engine" target="_blank">GitHub</a> &mdash; Base Sepolia: <a href="https://sepolia.basescan.org/address/0x34f97820A87Cc143f43870c73ca99931E0d694B0" target="_blank">0x34f978...</a></p>
+  </div>
+
+</div>
+
+<script>
+const T = {
+  es: {
+    logoSub:'Registro Verificable de Cuidado Animal',
+    tIntake:'Datos de ingreso', tMedical:'Protocolo médico inicial', tNutrition:'Plan nutricional', tAdoption:'Proceso de adopción',
+    lDate:'Fecha de ingreso', lType:'Tipo de animal', lName:'Nombre / ID temporal', lAge:'Edad estimada', lSex:'Sexo', lSteril:'Esterilización',
+    lVaccines:'Vacunas suministradas', lHealth:'Estado de salud general', lWeight:'Peso al ingreso (kg)', lConditions:'Condiciones médicas', lTreatments:'Tratamientos aplicados',
+    lFood:'Tipo de alimentación', lFreq:'Frecuencia de comidas', lSuppl:'Suplementos', lAllerg:'Alergias alimentarias',
+    lStatus:'Estado actual', lTransfer:'Fecha de transferencia', lAdopter:'Datos del adoptante', lFollowup:'Seguimiento post-adopción',
+    oSelect:'Seleccionar...', oDog:'Perro', oCat:'Gato', oOther:'Otro', oMale:'Macho', oFemale:'Hembra', oYes:'Sí', oNo:'No', oUnk:'Desconocido',
+    o1x:'1 vez al día', o2x:'2 veces al día', o3x:'3 veces al día', o4x:'4+ veces al día',
+    chipRehab:'En rehabilitación', chipReady:'Listo para adopción', chipFoster:'Hogar temporal', chipAdopted:'Adoptado',
+    hashLabel:'VCR Hash (se genera automáticamente)', hashPlaceholder:'Completa el formulario para generar el hash...',
+    btnSubmit:'Registrar VCR en Criollo', sTitle:'¡Registro completado exitosamente!', sSub:'El VCR ha sido generado y está listo para mintarse en Base Sepolia.'
+  },
+  en: {
+    logoSub:'Verifiable Animal Care Record',
+    tIntake:'Intake data', tMedical:'Initial medical protocol', tNutrition:'Nutritional plan', tAdoption:'Adoption process',
+    lDate:'Intake date', lType:'Animal type', lName:'Name / Temp ID', lAge:'Estimated age', lSex:'Sex', lSteril:'Sterilization',
+    lVaccines:'Vaccines administered', lHealth:'General health status', lWeight:'Intake weight (kg)', lConditions:'Medical conditions', lTreatments:'Treatments applied',
+    lFood:'Food type', lFreq:'Feeding frequency', lSuppl:'Supplements', lAllerg:'Food allergies',
+    lStatus:'Current status', lTransfer:'Transfer date', lAdopter:'Adopter info', lFollowup:'Post-adoption follow-up',
+    oSelect:'Select...', oDog:'Dog', oCat:'Cat', oOther:'Other', oMale:'Male', oFemale:'Female', oYes:'Yes', oNo:'No', oUnk:'Unknown',
+    o1x:'Once a day', o2x:'Twice a day', o3x:'3 times a day', o4x:'4+ times a day',
+    chipRehab:'In rehabilitation', chipReady:'Ready for adoption', chipFoster:'Foster home', chipAdopted:'Adopted',
+    hashLabel:'VCR Hash (auto-generated)', hashPlaceholder:'Fill in the form to generate hash...',
+    btnSubmit:'Register VCR in Criollo', sTitle:'Registration completed successfully!', sSub:'The VCR has been generated and is ready to be minted on Base Sepolia.'
+  }
+};
+
+let lang = 'es', health = 0, status = '';
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-es').classList.toggle('active', l === 'es');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  const t = T[l];
+  document.getElementById('logo-sub').textContent = t.logoSub;
+  document.getElementById('t-intake').textContent = t.tIntake;
+  document.getElementById('t-medical').textContent = t.tMedical;
+  document.getElementById('t-nutrition').textContent = t.tNutrition;
+  document.getElementById('t-adoption').textContent = t.tAdoption;
+  ['date','type','name','age','sex','steril','vaccines','health','weight','conditions','treatments','food','freq','suppl','allerg','status','transfer','adopter','followup'].forEach(k => {
+    const el = document.getElementById('l-' + k);
+    if (el) el.textContent = t['l' + k.charAt(0).toUpperCase() + k.slice(1)];
+  });
+  ['select','dog','cat','other','male','female','yes','no','unk','1x','2x','3x','4x'].forEach(k => {
+    const el = document.getElementById('o-' + k);
+    if (el) el.textContent = t['o' + k.charAt(0).toUpperCase() + k.slice(1)];
+  });
+  ['rehab','ready','foster','adopted'].forEach(k => {
+    const el = document.getElementById('chip-' + k);
+    if (el) el.textContent = t['chip' + k.charAt(0).toUpperCase() + k.slice(1)];
+  });
+  document.getElementById('hash-label').textContent = t.hashLabel;
+  document.getElementById('btn-submit').textContent = t.btnSubmit;
+  updateHash();
+}
+
+function setHealth(n) {
+  health = n;
+  document.querySelectorAll('.health-btn').forEach((b, i) => b.classList.toggle('sel', i < n));
+  updateHash();
+}
+
+function setStatus(s) {
+  status = s;
+  document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('sel'));
+  document.getElementById('chip-' + s).classList.add('sel');
+  document.getElementById('transfer-row').style.display = (s === 'adopted' || s === 'foster') ? 'grid' : 'none';
+  updateHash();
+}
+
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  const hex = (h >>> 0).toString(16).padStart(8, '0');
+  return (hex.repeat(8)).slice(0, 64);
+}
+
+function updateHash() {
+  const data = [
+    document.getElementById('f-date').value,
+    document.getElementById('f-type').value,
+    document.getElementById('f-name').value,
+    document.getElementById('f-age').value,
+    health.toString(), status,
+    document.getElementById('f-vaccines').value,
+    Date.now().toString().slice(0, -4)
+  ].join('|');
+  const hasData = document.getElementById('f-name').value || document.getElementById('f-date').value;
+  document.getElementById('hash-display').textContent = hasData ? '0x' + simpleHash(data) : T[lang].hashPlaceholder;
+}
+
+function submitForm() {
+  const name = document.getElementById('f-name').value;
+  const date = document.getElementById('f-date').value;
+  if (!name || !date) {
+    document.getElementById('hash-display').textContent = '⚠ ' + (lang === 'es' ? 'Completa nombre y fecha de ingreso' : 'Fill in name and intake date');
+    return;
+  }
+  const data = [name, date, document.getElementById('f-type').value, health, status, Date.now()].join('|');
+  const hash = '0x' + simpleHash(data);
+  document.getElementById('s-hash').textContent = 'VCR Hash: ' + hash;
+  document.getElementById('s-title').textContent = T[lang].sTitle;
+  document.getElementById('s-sub').textContent = T[lang].sSub;
+  document.getElementById('success-box').style.display = 'block';
+  document.getElementById('hash-display').textContent = hash;
+  document.getElementById('success-box').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', updateHash));
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+updateHash();
+</script>
+</body>
+</html>
