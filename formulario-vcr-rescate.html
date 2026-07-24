@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criollo — Formulario de Historia Animal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 28px 24px 24px;
+    }
+    header .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    header .logo span { color: #f5c842; }
+    header p { margin-top: 8px; font-size: 14px; color: #aaa; max-width: 560px; }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 32px 20px 64px; }
+
+    .intro-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #555;
+    }
+    .intro-card strong { color: #1a1a1a; }
+
+    /* Section blocks */
+    .section {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .section-header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-header .event-tag {
+      background: #f5c842;
+      color: #1a1a1a;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .section-header h2 { font-size: 15px; font-weight: 600; }
+    .section-header .optional {
+      margin-left: auto;
+      font-size: 11px;
+      color: #999;
+      font-weight: 400;
+    }
+
+    .section-body { padding: 20px 24px; }
+
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #1a1a1a;
+    }
+    label .meta {
+      font-weight: 400;
+      color: #888;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+    label .vcr-field {
+      float: right;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      color: #bbb;
+      font-weight: 400;
+      background: #f5f4f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #fff;
+      transition: border-color 0.15s;
+      appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #1a1a1a;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
+
+    .checkbox-group, .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .checkbox-group label, .radio-group label {
+      font-weight: 400;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f5f4f0;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .checkbox-group input[type="checkbox"],
+    .radio-group input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+    .checkbox-group label:has(input:checked),
+    .radio-group label:has(input:checked) {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .file-upload {
+      border: 1.5px dashed #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .file-upload:hover { border-color: #1a1a1a; color: #1a1a1a; }
+    .file-upload input[type="file"] { display: none; }
+
+    .conditional {
+      background: #f9f8f4;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid #ece9e0;
+    }
+    .conditional .field:last-child { margin-bottom: 0; }
+
+    .private-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #888;
+      background: #f0f0f0;
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin-top: 4px;
+    }
+
+    .submit-section {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .submit-section p { font-size: 13px; color: #666; margin-bottom: 16px; }
+
+    button[type="submit"] {
+      background: #1a1a1a;
+      color: #f5c842;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 40px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: -0.2px;
+      transition: opacity 0.15s;
+    }
+    button[type="submit"]:hover { opacity: 0.85; }
+
+    .divider {
+      height: 1px;
+      background: #eee;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Criollo<span>.</span></div>
+  <p>Formulario de Historia Animal — cada respuesta se convierte en un registro verificable e inalterable en la red Solana.</p>
+</header>
+
+<div class="container">
+
+  <div class="intro-card">
+    <strong>¿Por qué este formulario?</strong><br />
+    Cada sección corresponde a un tipo de evento que quedará registrado en Criollo. Llena lo que puedas — si no tienes la fecha exacta, pon el mes y año. Si no tienes foto, no pasa nada. Lo importante es que la historia quede.
+    <br /><br />
+    <span class="private-badge">🔒 Privado</span> Los campos marcados así <strong>no van a la blockchain</strong> — quedan protegidos en nuestra base de datos privada.
+  </div>
+
+  <form id="vcr-form">
+
+    <!-- ─────────────── SECCIÓN 1: EL ANIMAL ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Perfil</span>
+        <h2>El animal</h2>
+      </div>
+      <div class="section-body">
+
+        <div class="row-2">
+          <div class="field">
+            <label>Nombre <span class="vcr-field">animal_name</span></label>
+            <input type="text" name="animal_name" placeholder="¿Cómo se llama?" />
+          </div>
+          <div class="field">
+            <label>Especie <span class="vcr-field">species</span></label>
+            <select name="species">
+              <option value="cat" selected>Gato 🐱</option>
+              <option value="dog">Perro 🐕</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label>Sexo <span class="vcr-field">sex</span></label>
+            <select name="sex">
+              <option value="">Seleccionar...</option>
+              <option value="male">Macho</option>
+              <option value="female">Hembra</option>
+              <option value="unknown">No sé</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Edad aproximada <span class="vcr-field">estimated_age</span></label>
+            <select name="estimated_age">
+              <option value="">Seleccionar...</option>
+              <option value="kitten">Cachorro / menos de 6 meses</option>
+              <option value="young">Joven / 6 meses – 2 años</option>
+              <option value="adult">Adulto / 2–7 años</option>
+              <option value="senior">Mayor / más de 7 años</option>
+              <option value="unknown">No sé</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Descripción física <span class="meta">(color, marcas, tamaño)</span> <span class="vcr-field">physical_description</span></label>
+          <textarea name="physical_description" placeholder="Ej: gato negro con pecho blanco, tamaño mediano, ojos amarillos..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Foto del animal</label>
+          <label class="file-upload" for="animal_photo">
+            <input type="file" id="animal_photo" name="animal_photo" accept="image/*" />
+            📷 Toca aquí para adjuntar una foto
+          </label>
+          <p class="hint">La foto se guarda de forma privada y se referencia en el VCR mediante su huella digital (hash).</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 2: INGRESO ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 1</span>
+        <h2>Rescate / Ingreso</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">ingreso</span>
+      </div>
+      <div class="section-body">
+
+        <div class="row-2">
+          <div class="field">
+            <label>Fecha del rescate <span class="vcr-field">rescue_date</span></label>
+            <input type="date" name="rescue_date" />
+          </div>
+          <div class="field">
+            <label>Ciudad / Barrio <span class="vcr-field">rescue_location</span></label>
+            <input type="text" name="rescue_location" placeholder="Ej: Medellín, El Poblado" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Cómo estaba el animal cuando lo encontraste? <span class="vcr-field">initial_condition</span></label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="condition" value="injured" /> Herido</label>
+            <label><input type="checkbox" name="condition" value="malnourished" /> Desnutrido</label>
+            <label><input type="checkbox" name="condition" value="parasites" /> Con parásitos</label>
+            <label><input type="checkbox" name="condition" value="sick" /> Enfermo</label>
+            <label><input type="checkbox" name="condition" value="scared" /> Con miedo pero sano</label>
+            <label><input type="checkbox" name="condition" value="good" /> En buen estado</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cuéntanos qué pasó <span class="vcr-field">rescue_story</span></label>
+          <textarea name="rescue_story" placeholder="¿Dónde lo encontraste? ¿Qué te llevó a rescatarlo? Con tus propias palabras..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Foto del rescate <span class="meta">(si tienes)</span></label>
+          <label class="file-upload" for="rescue_photo">
+            <input type="file" id="rescue_photo" name="rescue_photo" accept="image/*" />
+            📷 Foto del momento del rescate
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 3: CONTROL MÉDICO ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 2</span>
+        <h2>Control veterinario</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">control_medico</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>¿Lo llevaste al veterinario?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="had_vet" value="yes" /> Sí</label>
+            <label><input type="radio" name="had_vet" value="no" /> No</label>
+            <label><input type="radio" name="had_vet" value="pending" /> Pendiente</label>
+          </div>
+        </div>
+
+        <div class="conditional" id="vet-details">
+          <div class="row-2">
+            <div class="field">
+              <label>Fecha de la consulta <span class="vcr-field">vet_date</span></label>
+              <input type="date" name="vet_date" />
+            </div>
+            <div class="field">
+              <label>Nombre de la clínica / vet <span class="vcr-field">vet_clinic</span></label>
+              <input type="text" name="vet_clinic" placeholder="Ej: Clínica Veterinaria Luna" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>¿Qué encontró el veterinario? <span class="vcr-field">vet_findings</span></label>
+            <textarea name="vet_findings" placeholder="Diagnóstico, peso, temperatura, observaciones..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>Comprobante de la consulta <span class="meta">(foto de la factura o historia clínica)</span></label>
+            <label class="file-upload" for="vet_doc">
+              <input type="file" id="vet_doc" name="vet_doc" accept="image/*,application/pdf" />
+              📄 Adjuntar comprobante
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 4: VACUNACIÓN ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 3</span>
+        <h2>Vacunación</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">vacunacion</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>¿Fue vacunado?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="had_vaccine" value="yes" /> Sí</label>
+            <label><input type="radio" name="had_vaccine" value="no" /> No</label>
+            <label><input type="radio" name="had_vaccine" value="pending" /> Pendiente</label>
+          </div>
+        </div>
+
+        <div class="conditional">
+          <div class="field">
+            <label>¿Qué vacunas recibió? <span class="vcr-field">vaccine_type</span></label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="vaccine_type" value="triple_felina" /> Triple felina</label>
+              <label><input type="checkbox" name="vaccine_type" value="antirabica" /> Antirrábica</label>
+              <label><input type="checkbox" name="vaccine_type" value="leucemia" /> Leucemia felina</label>
+              <label><input type="checkbox" name="vaccine_type" value="other_vax" /> Otra</label>
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label>Fecha de vacunación <span class="vcr-field">vaccine_date</span></label>
+              <input type="date" name="vaccine_date" />
+            </div>
+            <div class="field">
+              <label>Próxima dosis (si aplica) <span class="vcr-field">next_vaccine_date</span></label>
+              <input type="date" name="next_vaccine_date" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Comprobante de vacunación</label>
+            <label class="file-upload" for="vaccine_doc">
+              <input type="file" id="vaccine_doc" name="vaccine_doc" accept="image/*,application/pdf" />
+              📄 Adjuntar carnet o factura
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 5: ESTERILIZACIÓN ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 4</span>
+        <h2>Esterilización</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">esterilizacion</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>¿Fue esterilizado/a?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="had_sterilization" value="yes" /> Sí</label>
+            <label><input type="radio" name="had_sterilization" value="no" /> No</label>
+            <label><input type="radio" name="had_sterilization" value="pending" /> Pendiente</label>
+            <label><input type="radio" name="had_sterilization" value="unknown" /> No sé</label>
+          </div>
+        </div>
+
+        <div class="conditional">
+          <div class="row-2">
+            <div class="field">
+              <label>Fecha de la cirugía <span class="vcr-field">sterilization_date</span></label>
+              <input type="date" name="sterilization_date" />
+            </div>
+            <div class="field">
+              <label>Clínica <span class="vcr-field">sterilization_clinic</span></label>
+              <input type="text" name="sterilization_clinic" placeholder="Nombre de la clínica" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Comprobante de cirugía</label>
+            <label class="file-upload" for="sterilization_doc">
+              <input type="file" id="sterilization_doc" name="sterilization_doc" accept="image/*,application/pdf" />
+              📄 Adjuntar comprobante
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 6: OTROS CUIDADOS ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 5</span>
+        <h2>Otros cuidados</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">tratamiento</span>
+        <span class="optional">opcional</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>¿Recibió otros tratamientos? <span class="vcr-field">other_treatments</span></label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="other_tx" value="antiparasitarios" /> Antiparasitarios</label>
+            <label><input type="checkbox" name="other_tx" value="antibioticos" /> Antibióticos</label>
+            <label><input type="checkbox" name="other_tx" value="cirugia_otra" /> Otra cirugía</label>
+            <label><input type="checkbox" name="other_tx" value="hospitalizacion" /> Hospitalización</label>
+            <label><input type="checkbox" name="other_tx" value="fisioterapia" /> Recuperación física</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Detalles adicionales <span class="vcr-field">treatment_notes</span></label>
+          <textarea name="treatment_notes" placeholder="Cualquier otro cuidado o procedimiento que haya recibido el animal..."></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 7: CUIDADO TEMPORAL ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 6</span>
+        <h2>Cuidado temporal / Hogar de tránsito</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">guarderia</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>¿Quién ha cuidado al animal? <span class="vcr-field">caregiver_type</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="caregiver_type" value="self" /> Yo mismo/a</label>
+            <label><input type="radio" name="caregiver_type" value="foster" /> Un hogar de tránsito</label>
+            <label><input type="radio" name="caregiver_type" value="shelter" /> Albergue / fundación</label>
+            <label><input type="radio" name="caregiver_type" value="multiple" /> Varias personas</label>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label>Desde cuándo lo cuidas <span class="vcr-field">care_start_date</span></label>
+            <input type="date" name="care_start_date" />
+          </div>
+          <div class="field">
+            <label>Hasta cuándo (si aplica) <span class="vcr-field">care_end_date</span></label>
+            <input type="date" name="care_end_date" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Alguien ha contribuido económicamente para los cuidados? <span class="meta">(padrino)</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="has_sponsor" value="yes" /> Sí</label>
+            <label><input type="radio" name="has_sponsor" value="no" /> No</label>
+          </div>
+        </div>
+
+        <div class="conditional">
+          <div class="field">
+            <label>¿Qué tipo de apoyo? <span class="vcr-field">sponsor_contribution</span></label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="sponsor_type" value="money" /> Dinero para veterinario</label>
+              <label><input type="checkbox" name="sponsor_type" value="food" /> Comida</label>
+              <label><input type="checkbox" name="sponsor_type" value="medicine" /> Medicamentos</label>
+              <label><input type="checkbox" name="sponsor_type" value="other_sponsor" /> Otro</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 8: ADOPCIÓN ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Evento 7</span>
+        <h2>Adopción</h2>
+        <span class="event-tag" style="background:#e8f0fe; color:#1a73e8; margin-left:auto;">adopcion</span>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label>Estado actual del animal <span class="vcr-field">adoption_status</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="adoption_status" value="adopted" /> Ya fue adoptado</label>
+            <label><input type="radio" name="adoption_status" value="in_process" /> En proceso de adopción</label>
+            <label><input type="radio" name="adoption_status" value="looking" /> Buscando hogar</label>
+            <label><input type="radio" name="adoption_status" value="with_me" /> Queda conmigo</label>
+          </div>
+        </div>
+
+        <div class="conditional">
+          <div class="row-2">
+            <div class="field">
+              <label>Fecha de adopción <span class="vcr-field">adoption_date</span></label>
+              <input type="date" name="adoption_date" />
+            </div>
+            <div class="field">
+              <label>Ciudad del adoptante <span class="vcr-field">adoption_city</span></label>
+              <input type="text" name="adoption_city" placeholder="Ej: Bogotá" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Foto de la adopción <span class="meta">(si tienes)</span></label>
+            <label class="file-upload" for="adoption_photo">
+              <input type="file" id="adoption_photo" name="adoption_photo" accept="image/*" />
+              📷 Foto del momento de la entrega
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SECCIÓN 9: DATOS DEL RESCATISTA ─────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="event-tag">Contacto</span>
+        <h2>Tus datos</h2>
+      </div>
+      <div class="section-body">
+        <p class="hint" style="margin-bottom:16px;">Esta información es <strong>completamente privada</strong>. No se publica ni se almacena en la blockchain. Solo la usamos para contactarte si necesitamos aclarar algo.</p>
+
+        <div class="row-2">
+          <div class="field">
+            <label>Tu nombre <span class="private-badge">🔒 Privado</span></label>
+            <input type="text" name="rescuer_name" placeholder="Tu nombre" />
+          </div>
+          <div class="field">
+            <label>Ciudad <span class="private-badge">🔒 Privado</span></label>
+            <input type="text" name="rescuer_city" placeholder="Ej: Medellín" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>WhatsApp <span class="private-badge">🔒 Privado</span></label>
+          <input type="tel" name="rescuer_phone" placeholder="+57 300 000 0000" />
+          <p class="hint">Solo para coordinar el registro. No recibiras publicidad.</p>
+        </div>
+
+        <div class="field">
+          <label>¿Cómo quieres que aparezca tu nombre si publicamos la historia de este animal?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="credit_preference" value="full_name" /> Con mi nombre completo</label>
+            <label><input type="radio" name="credit_preference" value="first_name" /> Solo mi primer nombre</label>
+            <label><input type="radio" name="credit_preference" value="anonymous" /> Anónimo/a</label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field">
+          <label>¿Algo más que quieras contarnos?</label>
+          <textarea name="extra_notes" placeholder="Detalles adicionales, contexto especial, lo que sea que sientas que debería quedar en la historia de este animal..."></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────── SUBMIT ─────────────── -->
+    <div class="submit-section">
+      <p>Al enviar este formulario autorizas a Criollo a crear un registro verificable con la historia de este animal en la red Solana. Tu información personal nunca será publicada.</p>
+      <button type="submit">Registrar la historia →</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- ─── VCR FIELD MAP (comment for dev reference) ───────────────────────
+  EVENTO: ingreso
+    animal_name, species, sex, estimated_age, physical_description
+    rescue_date, rescue_location, initial_condition[], rescue_story
+    Evidence: animal_photo, rescue_photo → SHA-256 hash → off-chain ref
+
+  EVENTO: control_medico
+    vet_date, vet_clinic, vet_findings
+    Evidence: vet_doc → SHA-256 hash
+
+  EVENTO: vacunacion
+    vaccine_date, vaccine_type[], next_vaccine_date
+    Evidence: vaccine_doc → SHA-256 hash
+
+  EVENTO: esterilizacion
+    sterilization_date, sterilization_clinic
+    Evidence: sterilization_doc → SHA-256 hash
+
+  EVENTO: tratamiento
+    other_treatments[], treatment_notes
+
+  EVENTO: guarderia
+    care_start_date, care_end_date, caregiver_type
+    sponsor_contribution[] (if has_sponsor=yes)
+
+  EVENTO: adopcion
+    adoption_date, adoption_city, adoption_status
+    Evidence: adoption_photo → SHA-256 hash
+
+  PRIVATE (PostgreSQL only, never on-chain):
+    rescuer_name, rescuer_city, rescuer_phone, credit_preference
+────────────────────────────────────────────────────────────────────── -->
+
+</body>
+</html>
