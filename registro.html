@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criollo — Registro de mascotas perdidas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .emergency-bar {
+      background: #d32f2f;
+      color: #fff;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 20px 24px;
+    }
+    header .logo { font-size: 20px; font-weight: 700; }
+    header .logo span { color: #f5c842; }
+    header p { margin-top: 6px; font-size: 13px; color: #aaa; }
+
+    .container { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+
+    .report-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #d32f2f;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .report-btn:hover { opacity: 0.88; }
+
+    /* Filtros */
+    .filters {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filters select {
+      flex: 1;
+      min-width: 140px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      background: #fff;
+      color: #1a1a1a;
+    }
+    .filters input {
+      flex: 1;
+      min-width: 140px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    .filter-btn {
+      padding: 8px 18px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-card .num { font-size: 26px; font-weight: 700; }
+    .stat-card .label { font-size: 12px; color: #888; margin-top: 2px; }
+    .stat-card.lost .num { color: #d32f2f; }
+    .stat-card.found .num { color: #2e7d32; }
+    .stat-card.total .num { color: #1a1a1a; }
+
+    /* Cards de reportes */
+    .report-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+    .report-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+
+    .card-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header.lost { border-left: 4px solid #d32f2f; }
+    .card-header.found { border-left: 4px solid #2e7d32; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .badge.lost { background: #ffebee; color: #d32f2f; }
+    .badge.found { background: #e8f5e9; color: #2e7d32; }
+
+    .card-title { font-weight: 700; font-size: 15px; flex: 1; }
+    .card-date { font-size: 12px; color: #999; }
+
+    .card-body { padding: 0 16px 14px; }
+    .card-desc { font-size: 14px; color: #444; margin-bottom: 8px; }
+    .card-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #666;
+    }
+    .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+    /* Contacto (expandido) */
+    .card-contact {
+      display: none;
+      background: #f5f4f0;
+      border-top: 1.5px solid #e8e8e8;
+      padding: 14px 16px;
+    }
+    .card-contact.visible { display: block; }
+    .card-contact h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #555; text-transform: uppercase; letter-spacing: 0.3px; }
+    .contact-row { font-size: 14px; margin-bottom: 6px; }
+    .contact-row a { color: #1a1a1a; font-weight: 600; text-decoration: none; }
+    .contact-row a:hover { text-decoration: underline; }
+
+    /* Loading / empty */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 15px;
+    }
+    .empty {
+      text-align: center;
+      padding: 40px;
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      color: #888;
+    }
+    .empty h3 { margin-bottom: 8px; }
+
+    .refresh-bar {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    .refresh-bar button {
+      background: none;
+      border: none;
+      color: #1a1a1a;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 12px;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .stats { grid-template-columns: repeat(3, 1fr); }
+      .stat-card .num { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="emergency-bar">
+  🆘 EMERGENCIA ACTIVA — Terremoto Colombia — Actualización en tiempo real
+</div>
+
+<header>
+  <div class="logo">Criollo<span>.</span></div>
+  <p>Registro público de mascotas perdidas y encontradas.</p>
+</header>
+
+<div class="container">
+
+  <a href="mascotas-terremoto.html" class="report-btn">
+    + Reportar mascota perdida o encontrada
+  </a>
+
+  <!-- Filtros -->
+  <div class="filters">
+    <select id="filter-type" onchange="applyFilters()">
+      <option value="">Todos los reportes</option>
+      <option value="lost">Perdidos</option>
+      <option value="found">Encontrados</option>
+    </select>
+    <select id="filter-species" onchange="applyFilters()">
+      <option value="">Todas las especies</option>
+      <option value="dog">Perros 🐕</option>
+      <option value="cat">Gatos 🐱</option>
+      <option value="other">Otros</option>
+    </select>
+    <input type="text" id="filter-city" placeholder="Filtrar por ciudad..." oninput="applyFilters()" />
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card lost">
+      <div class="num" id="count-lost">—</div>
+      <div class="label">Perdidos</div>
+    </div>
+    <div class="stat-card found">
+      <div class="num" id="count-found">—</div>
+      <div class="label">Encontrados</div>
+    </div>
+    <div class="stat-card total">
+      <div class="num" id="count-total">—</div>
+      <div class="label">Total activos</div>
+    </div>
+  </div>
+
+  <div class="refresh-bar">
+    Actualizado hace <span id="last-update">—</span> · <button onclick="loadReports()">Actualizar ahora</button>
+  </div>
+
+  <!-- Lista de reportes -->
+  <div id="reports-list">
+    <div class="loading">Cargando reportes...</div>
+  </div>
+
+</div>
+
+<script>
+  const API = 'https://criollo-vcr-engine-production.up.railway.app';
+  let allReports = [];
+  let lastFetch = null;
+
+  const speciesLabel = { dog: '🐕 Perro', cat: '🐱 Gato', other: 'Otro animal' };
+  const statusLabel = { with_me: 'Conmigo', street: 'En la calle', shelter: 'En albergue' };
+
+  function timeAgo(dateStr) {
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 60) return 'hace un momento';
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  async function loadReports() {
+    try {
+      const res = await fetch(`${API}/api/emergency-reports`);
+      const data = await res.json();
+      allReports = data.reports || [];
+      lastFetch = new Date();
+      document.getElementById('last-update').textContent = 'ahora';
+      renderReports(allReports);
+    } catch (err) {
+      document.getElementById('reports-list').innerHTML =
+        '<div class="empty"><h3>No se pudo cargar</h3><p>Verifica tu conexión e intenta de nuevo.</p></div>';
+    }
+  }
+
+  function applyFilters() {
+    const type = document.getElementById('filter-type').value;
+    const species = document.getElementById('filter-species').value;
+    const city = document.getElementById('filter-city').value.toLowerCase().trim();
+
+    let filtered = allReports.filter(r => {
+      if (type && r.type !== type) return false;
+      if (species && r.species !== species) return false;
+      if (city && !r.city.toLowerCase().includes(city)) return false;
+      return true;
+    });
+
+    renderReports(filtered);
+  }
+
+  function renderReports(reports) {
+    const lost = allReports.filter(r => r.type === 'lost').length;
+    const found = allReports.filter(r => r.type === 'found').length;
+    document.getElementById('count-lost').textContent = lost;
+    document.getElementById('count-found').textContent = found;
+    document.getElementById('count-total').textContent = allReports.length;
+
+    const list = document.getElementById('reports-list');
+
+    if (reports.length === 0) {
+      list.innerHTML = '<div class="empty"><h3>Sin resultados</h3><p>No hay reportes con esos filtros.</p></div>';
+      return;
+    }
+
+    list.innerHTML = reports.map((r, i) => {
+      const isLost = r.type === 'lost';
+      const typeLabel = isLost ? '😢 Perdido' : '🐾 Encontrado';
+      const title = isLost
+        ? (r.animal_name ? r.animal_name : speciesLabel[r.species] || 'Animal')
+        : (speciesLabel[r.species] || 'Animal encontrado');
+
+      return `
+        <div class="report-card" onclick="toggleContact(${i})">
+          <div class="card-header ${r.type}">
+            <span class="badge ${r.type}">${typeLabel}</span>
+            <span class="card-title">${title}</span>
+            <span class="card-date">${timeAgo(r.created_at)}</span>
+          </div>
+          <div class="card-body">
+            <p class="card-desc">${r.description}</p>
+            <div class="card-meta">
+              <span>📍 ${r.city}${r.neighborhood ? ', ' + r.neighborhood : ''}</span>
+              ${r.species ? `<span>${speciesLabel[r.species] || r.species}</span>` : ''}
+              ${r.animal_status ? `<span>${statusLabel[r.animal_status] || r.animal_status}</span>` : ''}
+              ${r.matched_with ? `<span style="color:#f5a623;font-weight:700;">⚡ Posible match</span>` : ''}
+            </div>
+          </div>
+          <div class="card-contact" id="contact-${i}">
+            <h4>Contacto</h4>
+            <div class="contact-row">👤 ${r.reporter_name}</div>
+            <div class="contact-row">📱 <a href="https://wa.me/${r.whatsapp.replace(/\D/g,'')}" target="_blank">${r.whatsapp}</a></div>
+            ${r.instagram ? `<div class="contact-row">📷 <a href="https://instagram.com/${r.instagram.replace('@','')}" target="_blank">${r.instagram}</a></div>` : ''}
+            ${r.extra ? `<div class="contact-row" style="color:#666;font-size:13px;">💬 ${r.extra}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleContact(i) {
+    const el = document.getElementById('contact-' + i);
+    el.classList.toggle('visible');
+  }
+
+  // Cargar al inicio y refrescar cada 60 segundos
+  loadReports();
+  setInterval(() => {
+    loadReports();
+    if (lastFetch) {
+      const diff = Math.floor((Date.now() - lastFetch) / 1000);
+      document.getElementById('last-update').textContent = diff + 's';
+    }
+  }, 60000);
+</script>
+
+</body>
+</html>
