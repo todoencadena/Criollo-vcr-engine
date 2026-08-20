@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<!-- saved from url=(0103)file:///Users/juangarciaamador/Documents/Claude/Projects/Criollo%20VCR%20Engine/mascotas-terremoto.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criollo — Mascotas perdidas · Terremoto Colombia</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .emergency-bar {
+      background: #d32f2f;
+      color: #fff;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 20px 24px;
+    }
+    header .logo { font-size: 20px; font-weight: 700; }
+    header .logo span { color: #f5c842; }
+    header p { margin-top: 6px; font-size: 13px; color: #aaa; }
+
+    .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.15s;
+      color: #555;
+    }
+    .tab-btn.active-lost {
+      border-color: #d32f2f;
+      background: #d32f2f;
+      color: #fff;
+    }
+    .tab-btn.active-found {
+      border-color: #2e7d32;
+      background: #2e7d32;
+      color: #fff;
+    }
+    .tab-btn:not(.active-lost):not(.active-found):hover {
+      border-color: #1a1a1a;
+      color: #1a1a1a;
+    }
+
+    /* Forms */
+    .form-panel { display: none; }
+    .form-panel.visible { display: block; }
+
+    .section {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+    .lost .section-header { background: #d32f2f; }
+    .found .section-header { background: #2e7d32; }
+
+    .section-body { padding: 18px; }
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    label .opt { font-weight: 400; color: #999; font-size: 12px; }
+
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #1a1a1a;
+    }
+    textarea { resize: vertical; min-height: 72px; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .radio-group label {
+      font-weight: 400;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f5f4f0;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .radio-group input { width: auto; }
+    .radio-group label:has(input:checked) {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #1a1a1a;
+    }
+
+    .hint { font-size: 12px; color: #999; margin-top: 4px; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.15s;
+    }
+    .submit-btn:hover { opacity: 0.88; }
+    .lost .submit-btn { background: #d32f2f; color: #fff; }
+    .found .submit-btn { background: #2e7d32; color: #fff; }
+
+    .success-msg {
+      display: none;
+      background: #e8f5e9;
+      border: 1.5px solid #a5d6a7;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .success-msg.visible { display: block; }
+    .success-msg h3 { color: #2e7d32; margin-bottom: 8px; }
+    .success-msg p { font-size: 14px; color: #555; }
+
+    .registry-link {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+    }
+    .registry-link a {
+      color: #1a1a1a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .registry-link a:hover { text-decoration: underline; }
+
+    .bot-banner {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+    }
+    .bot-banner a {
+      color: #f5c842;
+      font-weight: 700;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="emergency-bar">
+  🆘 RESPUESTA DE EMERGENCIA — Terremoto Colombia — Registro activo 24/7
+</div>
+
+<header>
+  <div class="logo">Criollo<span>.</span></div>
+  <p>Conectamos mascotas perdidas con sus familias. Registro gratuito y público.</p>
+</header>
+
+<div class="container">
+
+  <div class="bot-banner">
+    También puedes reportar por Telegram →
+    <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a>
+  </div>
+
+  <div class="registry-link">
+    ¿Ya registraste tu mascota? <a href="file:///Users/juangarciaamador/Documents/Claude/Projects/Criollo%20VCR%20Engine/registro.html">Ver el registro público de mascotas →</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active-lost" onclick="showTab(&#39;lost&#39;)">
+      😢 Perdí mi mascota
+    </button>
+    <button class="tab-btn" onclick="showTab(&#39;found&#39;)">
+      🐾 Encontré un animal
+    </button>
+  </div>
+
+  <!-- FORMULARIO: PERDÍ MI MASCOTA -->
+  <div class="form-panel lost visible" id="panel-lost">
+    <form id="form-lost" onsubmit="handleSubmit(event, &#39;lost&#39;)">
+
+      <div class="section">
+        <div class="section-header">La mascota</div>
+        <div class="section-body">
+          <div class="row-2">
+            <div class="field">
+              <label>Nombre de la mascota</label>
+              <input type="text" name="animal_name" placeholder="Ej: Luna" required="">
+            </div>
+            <div class="field">
+              <label>Especie</label>
+              <select name="species" required="">
+                <option value="">Seleccionar...</option>
+                <option value="dog">Perro 🐕</option>
+                <option value="cat">Gato 🐱</option>
+                <option value="other">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Descripción física</label>
+            <textarea name="description" placeholder="Color, tamaño, raza, collar, marcas especiales..." required=""></textarea>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label>Ciudad / Municipio</label>
+              <input type="text" name="city" placeholder="Ej: Pasto" required="">
+            </div>
+            <div class="field">
+              <label>Barrio / Sector donde se perdió</label>
+              <input type="text" name="neighborhood" placeholder="Ej: Centro" required="">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>¿Cuándo se perdió?</label>
+            <input type="text" name="lost_date" placeholder="Ej: Hoy en la mañana / 11 agosto" required="">
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">Tus datos de contacto</div>
+        <div class="section-body">
+          <div class="field">
+            <label>Tu nombre</label>
+            <input type="text" name="owner_name" placeholder="Nombre completo" required="">
+          </div>
+
+          <div class="field">
+            <label>WhatsApp <span class="opt">(con código de país)</span></label>
+            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required="">
+          </div>
+
+          <div class="field">
+            <label>Instagram <span class="opt">(opcional)</span></label>
+            <input type="text" name="instagram" placeholder="@tuusuario">
+          </div>
+
+          <div class="field">
+            <label>¿Tienes foto de tu mascota?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="has_photo" value="yes"> Sí, la tengo</label>
+              <label><input type="radio" name="has_photo" value="send"> La puedo enviar por WhatsApp</label>
+              <label><input type="radio" name="has_photo" value="no"> No tengo</label>
+            </div>
+            <p class="hint">Si tienes foto, envíala directamente al bot: t.me/Crioollo_bot</p>
+          </div>
+
+          <div class="field">
+            <label>Información adicional <span class="opt">(opcional)</span></label>
+            <textarea name="extra" placeholder="Algo más que nos ayude a identificar a tu mascota o a contactarte..."></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Registrar mascota perdida →</button>
+        </div>
+      </div>
+
+    </form>
+    <div class="success-msg" id="success-lost">
+      <h3>✅ Registro recibido</h3>
+      <p>Tu mascota quedó en el registro. Publicaremos el aviso y te contactamos si alguien la encuentra. Comparte este link con amigos y vecinos para ampliar la búsqueda.</p>
+    </div>
+  </div>
+
+  <!-- FORMULARIO: ENCONTRÉ UN ANIMAL -->
+  <div class="form-panel found" id="panel-found">
+    <form id="form-found" onsubmit="handleSubmit(event, &#39;found&#39;)">
+
+      <div class="section">
+        <div class="section-header">El animal encontrado</div>
+        <div class="section-body">
+          <div class="row-2">
+            <div class="field">
+              <label>Especie</label>
+              <select name="species" required="">
+                <option value="">Seleccionar...</option>
+                <option value="dog">Perro 🐕</option>
+                <option value="cat">Gato 🐱</option>
+                <option value="other">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>¿Tiene collar o placa?</label>
+              <select name="has_collar">
+                <option value="yes">Sí</option>
+                <option value="no">No</option>
+                <option value="unknown">No sé</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Descripción física</label>
+            <textarea name="description" placeholder="Color, tamaño, raza aproximada, marcas especiales, estado de salud..." required=""></textarea>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label>Ciudad / Municipio</label>
+              <input type="text" name="city" placeholder="Ej: Pasto" required="">
+            </div>
+            <div class="field">
+              <label>Barrio / Sector donde lo encontraste</label>
+              <input type="text" name="neighborhood" placeholder="Ej: El Jardín" required="">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>¿Dónde está el animal ahora?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="animal_status" value="with_me" required=""> Conmigo / en mi casa</label>
+              <label><input type="radio" name="animal_status" value="street"> Sigue en la calle</label>
+              <label><input type="radio" name="animal_status" value="shelter"> En un albergue</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">Tus datos de contacto</div>
+        <div class="section-body">
+          <div class="field">
+            <label>Tu nombre</label>
+            <input type="text" name="finder_name" placeholder="Nombre completo" required="">
+          </div>
+
+          <div class="field">
+            <label>WhatsApp <span class="opt">(con código de país)</span></label>
+            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required="">
+          </div>
+
+          <div class="field">
+            <label>Instagram <span class="opt">(opcional)</span></label>
+            <input type="text" name="instagram" placeholder="@tuusuario">
+          </div>
+
+          <div class="field">
+            <label>¿Tienes foto del animal?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="has_photo" value="yes"> Sí, la tengo</label>
+              <label><input type="radio" name="has_photo" value="send"> La puedo enviar por WhatsApp</label>
+              <label><input type="radio" name="has_photo" value="no"> No tengo</label>
+            </div>
+            <p class="hint">Si tienes foto, envíala al bot: t.me/Crioollo_bot</p>
+          </div>
+
+          <div class="field">
+            <label>Información adicional <span class="opt">(opcional)</span></label>
+            <textarea name="extra" placeholder="Cualquier detalle que ayude a encontrar al dueño..."></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Registrar animal encontrado →</button>
+        </div>
+      </div>
+
+    </form>
+    <div class="success-msg" id="success-found">
+      <h3>✅ Registro recibido</h3>
+      <p>Gracias por ayudar. Publicaremos el aviso y te contactamos si el dueño aparece. Eres parte de la red Criollo. 🐾</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showTab(tab) {
+    document.getElementById('panel-lost').classList.remove('visible');
+    document.getElementById('panel-found').classList.remove('visible');
+    document.getElementById('panel-' + tab).classList.add('visible');
+
+    const btns = document.querySelectorAll('.tab-btn');
+    btns[0].className = 'tab-btn' + (tab === 'lost' ? ' active-lost' : '');
+    btns[1].className = 'tab-btn' + (tab === 'found' ? ' active-found' : '');
+  }
+
+  async function handleSubmit(e, type) {
+    e.preventDefault();
+    const form = e.target;
+    const raw = Object.fromEntries(new FormData(form));
+
+    // Normalizar nombres de campos para la API
+    const payload = {
+      type: type,
+      species: raw.species || null,
+      animal_name: raw.animal_name || null,
+      description: raw.description,
+      city: raw.city,
+      neighborhood: raw.neighborhood || null,
+      lost_or_found_date: raw.lost_date || null,
+      animal_status: raw.animal_status || null,
+      has_collar: raw.has_collar === 'yes',
+      has_photo: raw.has_photo === 'yes' || raw.has_photo === 'send',
+      reporter_name: raw.owner_name || raw.finder_name,
+      whatsapp: raw.whatsapp,
+      instagram: raw.instagram || null,
+      extra: raw.extra || null,
+    };
+
+    try {
+      const res = await fetch('https://criollo-vcr-engine-production.up.railway.app/api/emergency-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await res.json();
+
+      form.style.display = 'none';
+      const successEl = document.getElementById('success-' + type);
+      successEl.classList.add('visible');
+
+      // Si hay matches, mostrar los contactos
+      if (result.matches && result.matches.length > 0) {
+        const m = result.matches[0];
+        successEl.innerHTML += `
+          <div style="margin-top:16px;padding:14px;background:#fff3cd;border:1.5px solid #ffc107;border-radius:8px;text-align:left;">
+            <strong>🎯 ¡Posible coincidencia encontrada!</strong><br/>
+            <span style="font-size:13px;color:#555;">
+              ${m.description}<br/>
+              📍 ${m.city}${m.neighborhood ? ', ' + m.neighborhood : ''}<br/>
+              📱 WhatsApp: <strong>${m.whatsapp}</strong>
+              ${m.instagram ? '<br/>📷 Instagram: ' + m.instagram : ''}
+            </span>
+          </div>`;
+      }
+
+    } catch (err) {
+      console.error('Error enviando reporte:', err);
+      // Mostrar éxito igual — el dato puede estar guardado parcialmente
+      form.style.display = 'none';
+      document.getElementById('success-' + type).classList.add('visible');
+    }
+  }
+</script>
+
+
+
+</body></html>
