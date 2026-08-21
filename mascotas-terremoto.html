@@ -150,6 +150,17 @@
 
     .hint { font-size: 12px; color: #999; margin-top: 4px; }
 
+    .file-input {
+      width: 100%;
+      border: 1.5px dashed #bbb;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      background: #fafafa;
+      cursor: pointer;
+    }
+    .file-input:hover { border-color: #1a1a1a; }
+
     .submit-btn {
       width: 100%;
       padding: 15px;
@@ -302,7 +313,7 @@
 <div class="container">
 
   <div class="bot-banner">
-    También puedes reportar por Telegram →
+    ¿Prefieres registrar por chat? Escríbenos por Telegram →
     <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a>
   </div>
 
@@ -384,13 +395,9 @@
           </div>
 
           <div class="field">
-            <label>¿Tienes foto de tu mascota?</label>
-            <div class="radio-group">
-              <label><input type="radio" name="has_photo" value="yes"> Sí, la tengo</label>
-              <label><input type="radio" name="has_photo" value="send"> La puedo enviar por WhatsApp</label>
-              <label><input type="radio" name="has_photo" value="no"> No tengo</label>
-            </div>
-            <p class="hint">Si tienes foto, envíala directamente al bot: t.me/Crioollo_bot</p>
+            <label>Foto de tu mascota <span class="opt">(opcional, ayuda mucho)</span></label>
+            <input type="file" name="foto" accept="image/*" class="file-input">
+            <p class="hint">La foto se guarda de forma privada para ayudar a identificar a tu mascota. No se publica.</p>
           </div>
 
           <div class="field">
@@ -485,13 +492,9 @@
           </div>
 
           <div class="field">
-            <label>¿Tienes foto del animal?</label>
-            <div class="radio-group">
-              <label><input type="radio" name="has_photo" value="yes"> Sí, la tengo</label>
-              <label><input type="radio" name="has_photo" value="send"> La puedo enviar por WhatsApp</label>
-              <label><input type="radio" name="has_photo" value="no"> No tengo</label>
-            </div>
-            <p class="hint">Si tienes foto, envíala al bot: t.me/Crioollo_bot</p>
+            <label>Foto del animal <span class="opt">(opcional, ayuda mucho)</span></label>
+            <input type="file" name="foto" accept="image/*" class="file-input">
+            <p class="hint">La foto se guarda de forma privada para ayudar a identificar al animal. No se publica.</p>
           </div>
 
           <div class="field">
@@ -573,6 +576,76 @@
     });
   }
 
+  // Comprime una imagen y la devuelve como base64 (data URL).
+  // Reduce el ancho máximo a 800px y calidad 0.7 para que no pese demasiado.
+  function comprimirImagen(file, maxWidth) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const escala = Math.min(1, maxWidth / img.width);
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * escala);
+          canvas.height = Math.round(img.height * escala);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.onerror = () => reject(new Error('No se pudo procesar la imagen'));
+        img.src = ev.target.result;
+      };
+      reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Envía datos por POST a Apps Script usando un iframe oculto + form.
+  // Esto evita el bloqueo de CORS y permite mandar fotos grandes (que no caben en JSONP/GET).
+  function enviarPost(url, datos) {
+    return new Promise((resolve) => {
+      const iframeName = 'hidden_iframe_' + Math.random().toString(36).slice(2, 11);
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = url;
+      form.target = iframeName;
+      form.style.display = 'none';
+
+      Object.keys(datos).forEach(key => {
+        const input = document.createElement('textarea');
+        input.name = key;
+        input.value = datos[key] == null ? '' : datos[key];
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+
+      // No podemos leer la respuesta del iframe (cross-origin), pero sí sabemos
+      // que se envió. Asumimos éxito tras la carga del iframe.
+      let resuelto = false;
+      const finalizar = () => {
+        if (resuelto) return;
+        resuelto = true;
+        setTimeout(() => {
+          if (form.parentNode) form.parentNode.removeChild(form);
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        }, 1000);
+        resolve({ success: true });
+      };
+
+      iframe.addEventListener('load', finalizar);
+      // Respaldo por si el evento load no dispara
+      setTimeout(finalizar, 4000);
+
+      form.submit();
+    });
+  }
+
   function showTab(tab) {
     document.getElementById('panel-lost').classList.remove('visible');
     document.getElementById('panel-found').classList.remove('visible');
@@ -591,6 +664,27 @@
     const errorEl = document.getElementById('error-' + type);
     errorEl.classList.remove('visible');
 
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    // Procesa la foto si la persona subió una
+    let fotoBase64 = '';
+    let tieneFoto = 'no';
+    const fileInput = form.querySelector('input[type="file"]');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      try {
+        submitBtn.textContent = 'Procesando foto...';
+        fotoBase64 = await comprimirImagen(fileInput.files[0], 800);
+        tieneFoto = 'yes';
+      } catch (fotoErr) {
+        console.error('Error procesando foto:', fotoErr);
+        // Si falla la foto, seguimos sin ella en vez de bloquear el registro
+        fotoBase64 = '';
+        tieneFoto = 'no';
+      }
+      submitBtn.textContent = 'Enviando...';
+    }
+
     let payload;
 
     if (type === 'lost') {
@@ -605,7 +699,7 @@
         nombre_contacto: raw.owner_name || '',
         whatsapp: raw.whatsapp || '',
         instagram: raw.instagram || '',
-        tiene_foto: raw.has_photo || 'no',
+        tiene_foto: tieneFoto,
         info_adicional: raw.extra || ''
       };
     } else {
@@ -622,24 +716,25 @@
         nombre_contacto: raw.finder_name || '',
         whatsapp: raw.whatsapp || '',
         instagram: raw.instagram || '',
-        tiene_foto: raw.has_photo || 'no',
+        tiene_foto: tieneFoto,
         info_adicional: (STATUS_LABELS[raw.animal_status] || '') + (raw.extra ? ' — ' + raw.extra : '')
       };
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
+    payload.action = 'submit';
+    payload.foto_base64 = fotoBase64;
 
     try {
-      const result = await jsonp(APPS_SCRIPT_URL, Object.assign({ action: 'submit' }, payload));
+      // Usamos POST (iframe oculto) porque la foto es muy grande para JSONP/GET
+      const result = await enviarPost(APPS_SCRIPT_URL, payload);
 
       if (!result.success) throw new Error(result.error || 'Error desconocido');
 
       form.style.display = 'none';
       document.getElementById('success-' + type).classList.add('visible');
 
-      // Refresca el listado público para que aparezca el nuevo registro
-      cargarRegistro();
+      // Espera un momento a que Apps Script termine de guardar, luego refresca la lista
+      setTimeout(cargarRegistro, 2500);
 
     } catch (err) {
       console.error('Error enviando reporte:', err);
