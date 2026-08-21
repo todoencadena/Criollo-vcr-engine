@@ -536,6 +536,43 @@
     shelter: 'Está en un albergue'
   };
 
+  // Técnica JSONP: carga los datos como un <script>, no como fetch(),
+  // para evitar el bloqueo de CORS que da Google Apps Script.
+  function jsonp(url, params) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'jsonp_cb_' + Math.random().toString(36).slice(2, 11);
+      const allParams = Object.assign({}, params, { callback: callbackName });
+
+      const query = Object.keys(allParams)
+        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(allParams[k] == null ? '' : allParams[k]))
+        .join('&');
+
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error('Tiempo de espera agotado conectando con el registro'));
+      }, 15000);
+
+      function cleanup() {
+        clearTimeout(timeout);
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = function (data) {
+        cleanup();
+        resolve(data);
+      };
+
+      const script = document.createElement('script');
+      script.src = url + '?' + query;
+      script.onerror = () => {
+        cleanup();
+        reject(new Error('Error de red al conectar con el registro'));
+      };
+      document.body.appendChild(script);
+    });
+  }
+
   function showTab(tab) {
     document.getElementById('panel-lost').classList.remove('visible');
     document.getElementById('panel-found').classList.remove('visible');
@@ -594,13 +631,7 @@
     submitBtn.textContent = 'Enviando...';
 
     try {
-      const res = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita bloqueo de CORS
-        body: JSON.stringify(payload)
-      });
-
-      const result = await res.json();
+      const result = await jsonp(APPS_SCRIPT_URL, Object.assign({ action: 'submit' }, payload));
 
       if (!result.success) throw new Error(result.error || 'Error desconocido');
 
@@ -633,8 +664,7 @@
     cont.innerHTML = '<div class="registro-loading">Cargando registros...</div>';
 
     try {
-      const res = await fetch(APPS_SCRIPT_URL);
-      const data = await res.json();
+      const data = await jsonp(APPS_SCRIPT_URL, { action: 'list' });
 
       if (!data.success) throw new Error(data.error || 'Error desconocido');
 
