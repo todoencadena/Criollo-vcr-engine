@@ -543,7 +543,7 @@
   // Carga datos desde Apps Script vía JSONP. Confía SOLO en el callback + timeout,
   // sin usar onerror (que da falsos negativos tras la redirección 302 de Apps Script).
   // Este es el método confirmado que funciona con Google Apps Script.
-  function cargarDatos(url, params) {
+  function cargarDatosUnaVez(url, params) {
     return new Promise((resolve, reject) => {
       const cb = 'cb_' + Math.random().toString(36).slice(2, 11) + Date.now();
       const allParams = Object.assign({}, params, { callback: cb });
@@ -556,8 +556,8 @@
         if (listo) return;
         listo = true;
         cleanup();
-        reject(new Error('Tiempo de espera agotado conectando con el registro'));
-      }, 12000);
+        reject(new Error('timeout'));
+      }, 8000);
 
       function cleanup() {
         delete window[cb];
@@ -577,6 +577,20 @@
       // NO usamos script.onerror: da falsos negativos con la redirección de Apps Script.
       document.body.appendChild(script);
     });
+  }
+
+  // Intenta cargar hasta 3 veces antes de rendirse (por si un intento se cuelga).
+  async function cargarDatos(url, params) {
+    let ultimoError;
+    for (let i = 0; i < 3; i++) {
+      try {
+        return await cargarDatosUnaVez(url, params);
+      } catch (err) {
+        ultimoError = err;
+        await new Promise(r => setTimeout(r, 600)); // espera antes de reintentar
+      }
+    }
+    throw ultimoError || new Error('No se pudo conectar');
   }
 
   // Comprime una imagen y la devuelve como base64 (data URL).
@@ -799,8 +813,14 @@
     }
   }
 
-  // Carga el registro público automáticamente al abrir la página
-  cargarRegistro();
+  // Carga el registro público automáticamente cuando la página termina de cargar.
+  // Esperar a 'load' evita que el JSONP compita con otros scripts al inicio.
+  if (document.readyState === 'complete') {
+    cargarRegistro();
+  } else {
+    window.addEventListener('load', cargarRegistro);
+  }
+
 </script>
 
 </body></html>
