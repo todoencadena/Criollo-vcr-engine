@@ -1,309 +1,74 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criollo — Mascotas perdidas · Terremoto Colombia</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f4f0;
-      color: #1a1a1a;
-      line-height: 1.5;
-    }
-
-    .emergency-bar {
-      background: #d32f2f;
-      color: #fff;
-      text-align: center;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-
-    header {
-      background: #1a1a1a;
-      color: #fff;
-      padding: 20px 24px;
-    }
-    header .logo { font-size: 20px; font-weight: 700; }
-    header .logo span { color: #f5c842; }
-    header p { margin-top: 6px; font-size: 13px; color: #aaa; }
-
-    .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
-
-    /* Tabs */
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-    .tab-btn {
-      padding: 14px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-      text-align: center;
-      transition: all 0.15s;
-      color: #555;
-    }
-    .tab-btn.active-lost {
-      border-color: #d32f2f;
-      background: #d32f2f;
-      color: #fff;
-    }
-    .tab-btn.active-found {
-      border-color: #2e7d32;
-      background: #2e7d32;
-      color: #fff;
-    }
-    .tab-btn:not(.active-lost):not(.active-found):hover {
-      border-color: #1a1a1a;
-      color: #1a1a1a;
-    }
-
-    /* Forms */
-    .form-panel { display: none; }
-    .form-panel.visible { display: block; }
-
-    .section {
-      background: #fff;
-      border: 1.5px solid #e8e8e8;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-    .section-header {
-      padding: 12px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #fff;
-    }
-    .lost .section-header { background: #d32f2f; }
-    .found .section-header { background: #2e7d32; }
-
-    .section-body { padding: 18px; }
-    .field { margin-bottom: 16px; }
-    .field:last-child { margin-bottom: 0; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-    label .opt { font-weight: 400; color: #999; font-size: 12px; }
-
-    input[type="text"],
-    input[type="tel"],
-    select,
-    textarea {
-      width: 100%;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #1a1a1a;
-      background: #fff;
-      transition: border-color 0.15s;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #1a1a1a;
-    }
-    textarea { resize: vertical; min-height: 72px; }
-
-    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
-
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .radio-group label {
-      font-weight: 400;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #f5f4f0;
-      border: 1.5px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-    .radio-group input { width: auto; }
-    .radio-group label:has(input:checked) {
-      background: #1a1a1a;
-      color: #fff;
-      border-color: #1a1a1a;
-    }
-
-    .hint { font-size: 12px; color: #999; margin-top: 4px; }
-
-    .file-input {
-      width: 100%;
-      border: 1.5px dashed #bbb;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 13px;
-      background: #fafafa;
-      cursor: pointer;
-    }
-    .file-input:hover { border-color: #1a1a1a; }
-
-    .submit-btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.15s;
-    }
-    .submit-btn:hover { opacity: 0.88; }
-    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .lost .submit-btn { background: #d32f2f; color: #fff; }
-    .found .submit-btn { background: #2e7d32; color: #fff; }
-
-    .success-msg {
-      display: none;
-      background: #e8f5e9;
-      border: 1.5px solid #a5d6a7;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      margin-top: 16px;
-    }
-    .success-msg.visible { display: block; }
-    .success-msg h3 { color: #2e7d32; margin-bottom: 8px; }
-    .success-msg p { font-size: 14px; color: #555; }
-
-    .error-msg {
-      display: none;
-      background: #fdecea;
-      border: 1.5px solid #f5c6cb;
-      border-radius: 10px;
-      padding: 16px;
-      text-align: center;
-      margin-top: 16px;
-      font-size: 13px;
-      color: #a12622;
-    }
-    .error-msg.visible { display: block; }
-
-    .registry-link {
-      background: #fff;
-      border: 1.5px solid #e8e8e8;
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: #555;
-      text-align: center;
-    }
-    .registry-link a {
-      color: #1a1a1a;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .registry-link a:hover { text-decoration: underline; }
-
-    .bot-banner {
-      background: #1a1a1a;
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-bottom: 20px;
-      text-align: center;
-      color: #fff;
-      font-size: 14px;
-    }
-    .bot-banner a {
-      color: #f5c842;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    /* Registro público */
-    #registro {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 2px dashed #ddd;
-    }
-    #registro h2 {
-      font-size: 18px;
-      margin-bottom: 4px;
-    }
-    #registro .registro-sub {
-      font-size: 13px;
-      color: #777;
-      margin-bottom: 16px;
-    }
-    .registro-refresh {
-      background: none;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      color: #555;
-      margin-bottom: 16px;
-    }
-    .registro-refresh:hover { border-color: #1a1a1a; color: #1a1a1a; }
-
-    .registro-card {
-      background: #fff;
-      border: 1.5px solid #e8e8e8;
-      border-left: 4px solid #d32f2f;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
-    .registro-card.encontrada { border-left-color: #2e7d32; }
-    .registro-card .tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      background: #fdecea;
-      color: #d32f2f;
-    }
-    .registro-card.encontrada .tag { background: #e8f5e9; color: #2e7d32; }
-    .registro-card .titulo { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .registro-card .detalle { color: #555; margin-bottom: 4px; }
-    .registro-card .meta { color: #999; font-size: 12px; margin-top: 6px; }
-
-    .registro-empty, .registro-loading, .registro-error {
-      font-size: 13px;
-      color: #999;
-      text-align: center;
-      padding: 24px 0;
-    }
-  </style>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criollo — Mascotas perdidas · Terremoto Colombia</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f4f0; color: #1a1a1a; line-height: 1.5; }
+  .emergency-bar { background: #d32f2f; color: #fff; text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 600; }
+  header { background: #1a1a1a; color: #fff; padding: 20px 24px; }
+  header .logo { font-size: 20px; font-weight: 700; }
+  header .logo span { color: #f5c842; }
+  header p { margin-top: 6px; font-size: 13px; color: #aaa; }
+  .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+  .bot-banner { background: #1a1a1a; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; text-align: center; color: #fff; font-size: 14px; }
+  .bot-banner a { color: #f5c842; font-weight: 700; text-decoration: none; }
+  .registry-link { background: #fff; border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; font-size: 13px; color: #555; text-align: center; }
+  .registry-link a { color: #1a1a1a; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+  .tab-btn { padding: 14px; border: 2px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; font-size: 15px; font-weight: 600; text-align: center; color: #555; }
+  .tab-btn.active-lost { border-color: #d32f2f; background: #d32f2f; color: #fff; }
+  .tab-btn.active-found { border-color: #2e7d32; background: #2e7d32; color: #fff; }
+  .form-panel { display: none; }
+  .form-panel.visible { display: block; }
+  .section { background: #fff; border: 1.5px solid #e8e8e8; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+  .section-header { padding: 12px 18px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+  .lost .section-header { background: #d32f2f; }
+  .found .section-header { background: #2e7d32; }
+  .section-body { padding: 18px; }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  label .opt { font-weight: 400; color: #999; font-size: 12px; }
+  input[type="text"], input[type="tel"], select, textarea { width: 100%; border: 1.5px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #1a1a1a; background: #fff; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #1a1a1a; }
+  textarea { resize: vertical; min-height: 72px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .radio-group label { font-weight: 400; font-size: 13px; display: flex; align-items: center; gap: 6px; background: #f5f4f0; border: 1.5px solid #e0e0e0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  .radio-group input { width: auto; }
+  .hint { font-size: 12px; color: #999; margin-top: 4px; }
+  .file-input { width: 100%; border: 1.5px dashed #bbb; border-radius: 8px; padding: 12px; font-size: 13px; background: #fafafa; cursor: pointer; }
+  .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; color: #fff; }
+  .submit-btn:disabled { opacity: 0.6; }
+  .lost .submit-btn { background: #d32f2f; }
+  .found .submit-btn { background: #2e7d32; }
+  .success-msg { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 10px; padding: 20px; text-align: center; margin-top: 16px; }
+  .success-msg.visible { display: block; }
+  .success-msg h3 { color: #2e7d32; margin-bottom: 8px; }
+  .success-msg p { font-size: 14px; color: #555; }
+  .error-msg { display: none; background: #fdecea; border: 1.5px solid #f5c6cb; border-radius: 10px; padding: 16px; text-align: center; margin-top: 16px; font-size: 13px; color: #a12622; }
+  .error-msg.visible { display: block; }
+  #registro { margin-top: 40px; padding-top: 24px; border-top: 2px dashed #ddd; }
+  #registro h2 { font-size: 18px; margin-bottom: 4px; }
+  #registro .registro-sub { font-size: 13px; color: #777; margin-bottom: 16px; }
+  .registro-refresh { background: none; border: 1.5px solid #ddd; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: #555; margin-bottom: 16px; }
+  .registro-card { background: #fff; border: 1.5px solid #e8e8e8; border-left: 4px solid #d32f2f; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: 13px; }
+  .registro-card.encontrada { border-left-color: #2e7d32; }
+  .registro-card .tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; margin-bottom: 6px; background: #fdecea; color: #d32f2f; }
+  .registro-card.encontrada .tag { background: #e8f5e9; color: #2e7d32; }
+  .registro-card .titulo { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .registro-card .detalle { color: #555; margin-bottom: 4px; }
+  .registro-card .meta { color: #999; font-size: 12px; margin-top: 6px; }
+  .registro-empty, .registro-loading, .registro-error { font-size: 13px; color: #999; text-align: center; padding: 24px 0; }
+</style>
 </head>
 <body>
 
-<div class="emergency-bar">
-  🆘 RESPUESTA DE EMERGENCIA — Terremoto Colombia — Registro activo 24/7
-</div>
+<div class="emergency-bar">🆘 RESPUESTA DE EMERGENCIA — Terremoto Colombia — Registro activo 24/7</div>
 
 <header>
   <div class="logo">Criollo<span>.</span></div>
@@ -312,354 +77,129 @@
 
 <div class="container">
 
-  <div class="bot-banner">
-    ¿Prefieres registrar por chat? Escríbenos por Telegram →
-    <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a>
-  </div>
+  <div class="bot-banner">¿Prefieres registrar por chat? Escríbenos por Telegram → <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a></div>
 
-  <div class="registry-link">
-    ¿Ya registraste tu mascota? <a href="#registro">Ver el registro público de mascotas →</a>
-  </div>
+  <div class="registry-link">¿Ya registraste tu mascota? <a href="#registro">Ver el registro público de mascotas →</a></div>
 
   <div class="tabs">
-    <button class="tab-btn active-lost" onclick="showTab('lost')">
-      😢 Perdí mi mascota
-    </button>
-    <button class="tab-btn" onclick="showTab('found')">
-      🐾 Encontré un animal
-    </button>
+    <button class="tab-btn active-lost" onclick="showTab('lost')">😢 Perdí mi mascota</button>
+    <button class="tab-btn" onclick="showTab('found')">🐾 Encontré un animal</button>
   </div>
 
-  <!-- FORMULARIO: PERDÍ MI MASCOTA -->
+  <!-- PERDÍ MI MASCOTA -->
   <div class="form-panel lost visible" id="panel-lost">
     <form id="form-lost" onsubmit="handleSubmit(event, 'lost')">
-
       <div class="section">
         <div class="section-header">La mascota</div>
         <div class="section-body">
           <div class="row-2">
-            <div class="field">
-              <label>Nombre de la mascota</label>
-              <input type="text" name="animal_name" placeholder="Ej: Luna" required>
-            </div>
-            <div class="field">
-              <label>Especie</label>
-              <select name="species" required>
-                <option value="">Seleccionar...</option>
-                <option value="dog">Perro 🐕</option>
-                <option value="cat">Gato 🐱</option>
-                <option value="other">Otro</option>
-              </select>
-            </div>
+            <div class="field"><label>Nombre de la mascota</label><input type="text" name="animal_name" placeholder="Ej: Luna" required></div>
+            <div class="field"><label>Especie</label><select name="species" required><option value="">Seleccionar...</option><option value="Perro 🐕">Perro 🐕</option><option value="Gato 🐱">Gato 🐱</option><option value="Otro">Otro</option></select></div>
           </div>
-
-          <div class="field">
-            <label>Descripción física</label>
-            <textarea name="description" placeholder="Color, tamaño, raza, collar, marcas especiales..." required></textarea>
-          </div>
-
+          <div class="field"><label>Descripción física</label><textarea name="description" placeholder="Color, tamaño, raza, collar, marcas especiales..." required></textarea></div>
           <div class="row-2">
-            <div class="field">
-              <label>Ciudad / Municipio</label>
-              <input type="text" name="city" placeholder="Ej: Pasto" required>
-            </div>
-            <div class="field">
-              <label>Barrio / Sector donde se perdió</label>
-              <input type="text" name="neighborhood" placeholder="Ej: Centro" required>
-            </div>
+            <div class="field"><label>Ciudad / Municipio</label><input type="text" name="city" placeholder="Ej: Pasto" required></div>
+            <div class="field"><label>Barrio / Sector donde se perdió</label><input type="text" name="neighborhood" placeholder="Ej: Centro" required></div>
           </div>
-
-          <div class="field">
-            <label>¿Cuándo se perdió?</label>
-            <input type="text" name="lost_date" placeholder="Ej: Hoy en la mañana / 11 agosto" required>
-          </div>
+          <div class="field"><label>¿Cuándo se perdió?</label><input type="text" name="lost_date" placeholder="Ej: Hoy en la mañana / 11 agosto" required></div>
         </div>
       </div>
-
       <div class="section">
         <div class="section-header">Tus datos de contacto</div>
         <div class="section-body">
-          <div class="field">
-            <label>Tu nombre</label>
-            <input type="text" name="owner_name" placeholder="Nombre completo" required>
-          </div>
-
-          <div class="field">
-            <label>WhatsApp <span class="opt">(con código de país)</span></label>
-            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required>
-          </div>
-
-          <div class="field">
-            <label>Instagram <span class="opt">(opcional)</span></label>
-            <input type="text" name="instagram" placeholder="@tuusuario">
-          </div>
-
-          <div class="field">
-            <label>Foto de tu mascota <span class="opt">(opcional, ayuda mucho)</span></label>
-            <input type="file" name="foto" accept="image/*" class="file-input">
-            <p class="hint">La foto se guarda de forma privada para ayudar a identificar a tu mascota. No se publica.</p>
-          </div>
-
-          <div class="field">
-            <label>Información adicional <span class="opt">(opcional)</span></label>
-            <textarea name="extra" placeholder="Algo más que nos ayude a identificar a tu mascota o a contactarte..."></textarea>
-          </div>
-
+          <div class="field"><label>Tu nombre</label><input type="text" name="owner_name" placeholder="Nombre completo" required></div>
+          <div class="field"><label>WhatsApp <span class="opt">(con código de país)</span></label><input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required></div>
+          <div class="field"><label>Instagram <span class="opt">(opcional)</span></label><input type="text" name="instagram" placeholder="@tuusuario"></div>
+          <div class="field"><label>Foto de tu mascota <span class="opt">(opcional, ayuda mucho)</span></label><input type="file" name="foto" accept="image/*" class="file-input"><p class="hint">La foto se guarda de forma privada. No se publica.</p></div>
+          <div class="field"><label>Información adicional <span class="opt">(opcional)</span></label><textarea name="extra" placeholder="Algo más que ayude a identificar a tu mascota..."></textarea></div>
           <button type="submit" class="submit-btn">Registrar mascota perdida →</button>
         </div>
       </div>
-
     </form>
-    <div class="success-msg" id="success-lost">
-      <h3>✅ Registro recibido</h3>
-      <p>Tu mascota quedó en el registro. Publicaremos el aviso y te contactamos si alguien la encuentra. Comparte este link con amigos y vecinos para ampliar la búsqueda.</p>
-    </div>
-    <div class="error-msg" id="error-lost">
-      ⚠️ Hubo un problema enviando tu registro. Por favor intenta de nuevo, o repórtalo directo por Telegram: t.me/Crioollo_bot
-    </div>
+    <div class="success-msg" id="success-lost"><h3>✅ Registro recibido</h3><p>Tu mascota quedó en el registro. Comparte este link con amigos y vecinos para ampliar la búsqueda.</p></div>
+    <div class="error-msg" id="error-lost">⚠️ Hubo un problema. Intenta de nuevo, o repórtalo por Telegram: t.me/Crioollo_bot</div>
   </div>
 
-  <!-- FORMULARIO: ENCONTRÉ UN ANIMAL -->
+  <!-- ENCONTRÉ UN ANIMAL -->
   <div class="form-panel found" id="panel-found">
     <form id="form-found" onsubmit="handleSubmit(event, 'found')">
-
       <div class="section">
         <div class="section-header">El animal encontrado</div>
         <div class="section-body">
           <div class="row-2">
-            <div class="field">
-              <label>Especie</label>
-              <select name="species" required>
-                <option value="">Seleccionar...</option>
-                <option value="dog">Perro 🐕</option>
-                <option value="cat">Gato 🐱</option>
-                <option value="other">Otro</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>¿Tiene collar o placa?</label>
-              <select name="has_collar">
-                <option value="yes">Sí</option>
-                <option value="no">No</option>
-                <option value="unknown">No sé</option>
-              </select>
-            </div>
+            <div class="field"><label>Especie</label><select name="species" required><option value="">Seleccionar...</option><option value="Perro 🐕">Perro 🐕</option><option value="Gato 🐱">Gato 🐱</option><option value="Otro">Otro</option></select></div>
+            <div class="field"><label>¿Tiene collar o placa?</label><select name="has_collar"><option value="yes">Sí</option><option value="no">No</option><option value="unknown">No sé</option></select></div>
           </div>
-
-          <div class="field">
-            <label>Descripción física</label>
-            <textarea name="description" placeholder="Color, tamaño, raza aproximada, marcas especiales, estado de salud..." required></textarea>
-          </div>
-
+          <div class="field"><label>Descripción física</label><textarea name="description" placeholder="Color, tamaño, raza aproximada, estado de salud..." required></textarea></div>
           <div class="row-2">
-            <div class="field">
-              <label>Ciudad / Municipio</label>
-              <input type="text" name="city" placeholder="Ej: Pasto" required>
-            </div>
-            <div class="field">
-              <label>Barrio / Sector donde lo encontraste</label>
-              <input type="text" name="neighborhood" placeholder="Ej: El Jardín" required>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>¿Dónde está el animal ahora?</label>
-            <div class="radio-group">
-              <label><input type="radio" name="animal_status" value="with_me" required> Conmigo / en mi casa</label>
-              <label><input type="radio" name="animal_status" value="street"> Sigue en la calle</label>
-              <label><input type="radio" name="animal_status" value="shelter"> En un albergue</label>
-            </div>
+            <div class="field"><label>Ciudad / Municipio</label><input type="text" name="city" placeholder="Ej: Pasto" required></div>
+            <div class="field"><label>Barrio / Sector donde lo encontraste</label><input type="text" name="neighborhood" placeholder="Ej: El Jardín" required></div>
           </div>
         </div>
       </div>
-
       <div class="section">
         <div class="section-header">Tus datos de contacto</div>
         <div class="section-body">
-          <div class="field">
-            <label>Tu nombre</label>
-            <input type="text" name="finder_name" placeholder="Nombre completo" required>
-          </div>
-
-          <div class="field">
-            <label>WhatsApp <span class="opt">(con código de país)</span></label>
-            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required>
-          </div>
-
-          <div class="field">
-            <label>Instagram <span class="opt">(opcional)</span></label>
-            <input type="text" name="instagram" placeholder="@tuusuario">
-          </div>
-
-          <div class="field">
-            <label>Foto del animal <span class="opt">(opcional, ayuda mucho)</span></label>
-            <input type="file" name="foto" accept="image/*" class="file-input">
-            <p class="hint">La foto se guarda de forma privada para ayudar a identificar al animal. No se publica.</p>
-          </div>
-
-          <div class="field">
-            <label>Información adicional <span class="opt">(opcional)</span></label>
-            <textarea name="extra" placeholder="Cualquier detalle que ayude a encontrar al dueño..."></textarea>
-          </div>
-
+          <div class="field"><label>Tu nombre</label><input type="text" name="finder_name" placeholder="Nombre completo" required></div>
+          <div class="field"><label>WhatsApp <span class="opt">(con código de país)</span></label><input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required></div>
+          <div class="field"><label>Instagram <span class="opt">(opcional)</span></label><input type="text" name="instagram" placeholder="@tuusuario"></div>
+          <div class="field"><label>Foto del animal <span class="opt">(opcional, ayuda mucho)</span></label><input type="file" name="foto" accept="image/*" class="file-input"><p class="hint">La foto se guarda de forma privada. No se publica.</p></div>
+          <div class="field"><label>Información adicional <span class="opt">(opcional)</span></label><textarea name="extra" placeholder="Cualquier detalle que ayude a encontrar al dueño..."></textarea></div>
           <button type="submit" class="submit-btn">Registrar animal encontrado →</button>
         </div>
       </div>
-
     </form>
-    <div class="success-msg" id="success-found">
-      <h3>✅ Registro recibido</h3>
-      <p>Gracias por ayudar. Publicaremos el aviso y te contactamos si el dueño aparece. Eres parte de la red Criollo. 🐾</p>
-    </div>
-    <div class="error-msg" id="error-found">
-      ⚠️ Hubo un problema enviando tu registro. Por favor intenta de nuevo, o repórtalo directo por Telegram: t.me/Crioollo_bot
-    </div>
+    <div class="success-msg" id="success-found"><h3>✅ Registro recibido</h3><p>Gracias por ayudar. Eres parte de la red Criollo. 🐾</p></div>
+    <div class="error-msg" id="error-found">⚠️ Hubo un problema. Intenta de nuevo, o repórtalo por Telegram: t.me/Crioollo_bot</div>
   </div>
 
   <!-- REGISTRO PÚBLICO -->
   <div id="registro">
     <h2>📋 Registro público de mascotas</h2>
-    <p class="registro-sub">Todos los reportes de mascotas perdidas y encontradas, en orden del más reciente al más antiguo.</p>
+    <p class="registro-sub">Todos los reportes, del más reciente al más antiguo.</p>
     <button class="registro-refresh" onclick="cargarRegistro()">🔄 Actualizar lista</button>
-    <div id="registro-lista">
-      <div class="registro-loading">Cargando registros...</div>
-    </div>
+    <div id="registro-lista"><div class="registro-loading">Cargando registros...</div></div>
   </div>
 
 </div>
 
 <script>
-  // URL de tu Google Apps Script (Web App) conectado al Google Sheet
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHmIPQOLpxlOR5ZUWQ1XbowCLLGRTM_YA7idqNWlVP7CEtbRZCzaJebfbV282qqEPyxg/exec';
+  const URL = 'https://script.google.com/macros/s/AKfycbyHmIPQOLpxlOR5ZUWQ1XbowCLLGRTM_YA7idqNWlVP7CEtbRZCzaJebfbV282qqEPyxg/exec';
 
-  const SPECIES_LABELS = { dog: 'Perro 🐕', cat: 'Gato 🐱', other: 'Otro animal' };
-  const STATUS_LABELS = {
-    with_me: 'Está con quien lo encontró',
-    street: 'Sigue en la calle',
-    shelter: 'Está en un albergue'
-  };
-
-  // Técnica JSONP: carga los datos como un <script>, no como fetch(),
-  // Carga datos desde Apps Script vía JSONP. Confía SOLO en el callback + timeout,
-  // sin usar onerror (que da falsos negativos tras la redirección 302 de Apps Script).
-  // Este es el método confirmado que funciona con Google Apps Script.
-  function cargarDatosUnaVez(url, params) {
+  // ── ÚNICO método de conexión: JSONP (confirmado que funciona) ──
+  function jsonp(params) {
     return new Promise((resolve, reject) => {
       const cb = 'cb_' + Math.random().toString(36).slice(2, 11) + Date.now();
-      const allParams = Object.assign({}, params, { callback: cb });
-      const query = Object.keys(allParams)
-        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(allParams[k] == null ? '' : allParams[k]))
-        .join('&');
-
+      params.callback = cb;
+      const query = Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k])).join('&');
       let listo = false;
-      const timeout = setTimeout(() => {
-        if (listo) return;
-        listo = true;
-        cleanup();
-        reject(new Error('timeout'));
-      }, 8000);
-
-      function cleanup() {
-        delete window[cb];
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-
-      window[cb] = function (data) {
-        if (listo) return;
-        listo = true;
-        clearTimeout(timeout);
-        cleanup();
-        resolve(data);
-      };
-
-      const script = document.createElement('script');
-      script.src = url + '?' + query + '&t=' + Date.now();
-      // NO usamos script.onerror: da falsos negativos con la redirección de Apps Script.
-      document.body.appendChild(script);
+      const to = setTimeout(() => { if (!listo) { listo = true; clean(); reject(new Error('timeout')); } }, 20000);
+      function clean() { delete window[cb]; if (s.parentNode) s.remove(); }
+      window[cb] = (data) => { if (listo) return; listo = true; clearTimeout(to); clean(); resolve(data); };
+      const s = document.createElement('script');
+      s.src = URL + '?' + query + '&t=' + Date.now();
+      document.body.appendChild(s);
     });
   }
 
-  // Intenta cargar hasta 3 veces antes de rendirse (por si un intento se cuelga).
-  async function cargarDatos(url, params) {
-    let ultimoError;
-    for (let i = 0; i < 3; i++) {
-      try {
-        return await cargarDatosUnaVez(url, params);
-      } catch (err) {
-        ultimoError = err;
-        await new Promise(r => setTimeout(r, 600)); // espera antes de reintentar
-      }
-    }
-    throw ultimoError || new Error('No se pudo conectar');
-  }
-
-  // Comprime una imagen y la devuelve como base64 (data URL).
-  // Reduce el ancho máximo a 800px y calidad 0.7 para que no pese demasiado.
-  function comprimirImagen(file, maxWidth) {
+  function comprimir(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          const escala = Math.min(1, maxWidth / img.width);
+          const escala = Math.min(1, 600 / img.width);
           const canvas = document.createElement('canvas');
           canvas.width = Math.round(img.width * escala);
           canvas.height = Math.round(img.height * escala);
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.7));
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
         };
-        img.onerror = () => reject(new Error('No se pudo procesar la imagen'));
+        img.onerror = () => reject(new Error('img'));
         img.src = ev.target.result;
       };
-      reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+      reader.onerror = () => reject(new Error('read'));
       reader.readAsDataURL(file);
-    });
-  }
-
-  // Envía datos por POST a Apps Script usando un iframe oculto + form.
-  // Esto evita el bloqueo de CORS y permite mandar fotos grandes (que no caben en JSONP/GET).
-  function enviarPost(url, datos) {
-    return new Promise((resolve) => {
-      const iframeName = 'hidden_iframe_' + Math.random().toString(36).slice(2, 11);
-      const iframe = document.createElement('iframe');
-      iframe.name = iframeName;
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = url;
-      form.target = iframeName;
-      form.style.display = 'none';
-
-      Object.keys(datos).forEach(key => {
-        const input = document.createElement('textarea');
-        input.name = key;
-        input.value = datos[key] == null ? '' : datos[key];
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-
-      // No podemos leer la respuesta del iframe (cross-origin), pero sí sabemos
-      // que se envió. Asumimos éxito tras la carga del iframe.
-      let resuelto = false;
-      const finalizar = () => {
-        if (resuelto) return;
-        resuelto = true;
-        setTimeout(() => {
-          if (form.parentNode) form.parentNode.removeChild(form);
-          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        }, 1000);
-        resolve({ success: true });
-      };
-
-      iframe.addEventListener('load', finalizar);
-      // Respaldo por si el evento load no dispara
-      setTimeout(finalizar, 4000);
-
-      form.submit();
     });
   }
 
@@ -667,7 +207,6 @@
     document.getElementById('panel-lost').classList.remove('visible');
     document.getElementById('panel-found').classList.remove('visible');
     document.getElementById('panel-' + tab).classList.add('visible');
-
     const btns = document.querySelectorAll('.tab-btn');
     btns[0].className = 'tab-btn' + (tab === 'lost' ? ' active-lost' : '');
     btns[1].className = 'tab-btn' + (tab === 'found' ? ' active-found' : '');
@@ -677,150 +216,76 @@
     e.preventDefault();
     const form = e.target;
     const raw = Object.fromEntries(new FormData(form));
-    const submitBtn = form.querySelector('.submit-btn');
-    const errorEl = document.getElementById('error-' + type);
-    errorEl.classList.remove('visible');
+    const btn = form.querySelector('.submit-btn');
+    document.getElementById('error-' + type).classList.remove('visible');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
-
-    // Procesa la foto si la persona subió una
-    let fotoBase64 = '';
-    let tieneFoto = 'no';
+    let foto = '', tieneFoto = 'no';
     const fileInput = form.querySelector('input[type="file"]');
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-      try {
-        submitBtn.textContent = 'Procesando foto...';
-        fotoBase64 = await comprimirImagen(fileInput.files[0], 800);
-        tieneFoto = 'yes';
-      } catch (fotoErr) {
-        console.error('Error procesando foto:', fotoErr);
-        // Si falla la foto, seguimos sin ella en vez de bloquear el registro
-        fotoBase64 = '';
-        tieneFoto = 'no';
-      }
-      submitBtn.textContent = 'Enviando...';
+    if (fileInput && fileInput.files[0]) {
+      try { btn.textContent = 'Procesando foto...'; foto = await comprimir(fileInput.files[0]); tieneFoto = 'yes'; btn.textContent = 'Enviando...'; }
+      catch (x) { foto = ''; tieneFoto = 'no'; }
     }
 
-    let payload;
-
+    let p;
     if (type === 'lost') {
-      payload = {
-        tipo: 'perdida',
-        nombre_mascota: raw.animal_name || '',
-        especie: SPECIES_LABELS[raw.species] || raw.species || '',
-        descripcion: raw.description || '',
-        ciudad: raw.city || '',
-        barrio: raw.neighborhood || '',
-        fecha_perdida: raw.lost_date || '',
-        nombre_contacto: raw.owner_name || '',
-        whatsapp: raw.whatsapp || '',
-        instagram: raw.instagram || '',
-        tiene_foto: tieneFoto,
-        info_adicional: raw.extra || ''
-      };
+      p = { action:'submit', tipo:'perdida', nombre_mascota:raw.animal_name||'', especie:raw.species||'', descripcion:raw.description||'', ciudad:raw.city||'', barrio:raw.neighborhood||'', fecha_perdida:raw.lost_date||'', nombre_contacto:raw.owner_name||'', whatsapp:raw.whatsapp||'', instagram:raw.instagram||'', tiene_foto:tieneFoto, info_adicional:raw.extra||'', foto_base64:foto };
     } else {
-      const collarTxt = raw.has_collar === 'yes' ? 'Sí tiene collar/placa.' :
-                         raw.has_collar === 'no' ? 'No tiene collar.' : 'No se sabe si tiene collar.';
-      payload = {
-        tipo: 'encontrada',
-        nombre_mascota: '',
-        especie: SPECIES_LABELS[raw.species] || raw.species || '',
-        descripcion: (raw.description || '') + ' ' + collarTxt,
-        ciudad: raw.city || '',
-        barrio: raw.neighborhood || '',
-        fecha_perdida: '',
-        nombre_contacto: raw.finder_name || '',
-        whatsapp: raw.whatsapp || '',
-        instagram: raw.instagram || '',
-        tiene_foto: tieneFoto,
-        info_adicional: (STATUS_LABELS[raw.animal_status] || '') + (raw.extra ? ' — ' + raw.extra : '')
-      };
+      const collar = raw.has_collar==='yes'?'Sí tiene collar.':raw.has_collar==='no'?'No tiene collar.':'Collar desconocido.';
+      p = { action:'submit', tipo:'encontrada', nombre_mascota:'', especie:raw.species||'', descripcion:(raw.description||'')+' '+collar, ciudad:raw.city||'', barrio:raw.neighborhood||'', fecha_perdida:'', nombre_contacto:raw.finder_name||'', whatsapp:raw.whatsapp||'', instagram:raw.instagram||'', tiene_foto:tieneFoto, info_adicional:raw.extra||'', foto_base64:foto };
     }
-
-    payload.action = 'submit';
-    payload.foto_base64 = fotoBase64;
 
     try {
-      // Usamos POST (iframe oculto) porque la foto es muy grande para JSONP/GET
-      const result = await enviarPost(APPS_SCRIPT_URL, payload);
-
-      if (!result.success) throw new Error(result.error || 'Error desconocido');
-
+      const res = await jsonp(p);
+      if (!res.success) throw new Error(res.error || 'error');
       form.style.display = 'none';
       document.getElementById('success-' + type).classList.add('visible');
-
-      // Espera un momento a que Apps Script termine de guardar, luego refresca la lista
-      setTimeout(cargarRegistro, 2500);
-
+      cargarRegistro();
     } catch (err) {
-      console.error('Error enviando reporte:', err);
-      errorEl.classList.add('visible');
-      submitBtn.disabled = false;
-      submitBtn.textContent = type === 'lost' ? 'Registrar mascota perdida →' : 'Registrar animal encontrado →';
+      document.getElementById('error-' + type).classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = type === 'lost' ? 'Registrar mascota perdida →' : 'Registrar animal encontrado →';
     }
   }
 
-  function tiempoDesde(fechaISO) {
-    if (!fechaISO) return '';
-    const diffMs = Date.now() - new Date(fechaISO).getTime();
-    const horas = Math.floor(diffMs / 3600000);
-    if (horas < 1) return 'hace menos de 1 hora';
-    if (horas < 24) return `hace ${horas} hora${horas === 1 ? '' : 's'}`;
-    const dias = Math.floor(horas / 24);
-    return `hace ${dias} día${dias === 1 ? '' : 's'}`;
+  function tiempoDesde(iso) {
+    if (!iso) return '';
+    const h = Math.floor((Date.now() - new Date(iso).getTime()) / 3600000);
+    if (h < 1) return 'hace menos de 1 hora';
+    if (h < 24) return 'hace ' + h + ' hora' + (h===1?'':'s');
+    const d = Math.floor(h / 24);
+    return 'hace ' + d + ' día' + (d===1?'':'s');
   }
 
   async function cargarRegistro() {
     const cont = document.getElementById('registro-lista');
     cont.innerHTML = '<div class="registro-loading">Cargando registros...</div>';
-
     try {
-      const data = await cargarDatos(APPS_SCRIPT_URL, { action: 'list' });
-
-      if (!data.success) throw new Error(data.error || 'Error desconocido');
-
-      const registros = data.registros || [];
-
-      if (registros.length === 0) {
-        cont.innerHTML = '<div class="registro-empty">Aún no hay registros públicos. ¡Sé el primero en reportar!</div>';
-        return;
-      }
-
-      cont.innerHTML = registros.map(r => {
+      const data = await jsonp({ action: 'list' });
+      if (!data.success) throw new Error(data.error || 'error');
+      const regs = data.registros || [];
+      if (!regs.length) { cont.innerHTML = '<div class="registro-empty">Aún no hay registros públicos. ¡Sé el primero en reportar!</div>'; return; }
+      cont.innerHTML = regs.map(r => {
         const esPerdida = r.tipo === 'perdida';
-        const titulo = esPerdida
-          ? (r.nombre_mascota ? `${r.nombre_mascota} (${r.especie || 'mascota'})` : (r.especie || 'Mascota perdida'))
-          : `${r.especie || 'Animal'} encontrado`;
-        const fotoTxt = (r.tiene_foto === 'yes' || r.tiene_foto === 'send') ? ' · 📷 con foto' : '';
-
-        return `
-          <div class="registro-card ${esPerdida ? 'perdida' : 'encontrada'}">
-            <span class="tag">${esPerdida ? '😢 Perdida' : '🐾 Encontrada'}</span>
-            <div class="titulo">${titulo}</div>
-            <div class="detalle">${r.descripcion || ''}</div>
-            <div class="detalle">📍 ${r.ciudad || ''}${r.barrio ? ', ' + r.barrio : ''}${fotoTxt}</div>
-            <div class="meta">
-              Reportado por ${r.nombre_contacto || 'alguien'} ${tiempoDesde(r.fecha_registro)} ·
-              Contacta vía <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a>
-            </div>
-          </div>`;
+        const titulo = esPerdida ? (r.nombre_mascota ? r.nombre_mascota + ' (' + (r.especie||'mascota') + ')' : (r.especie||'Mascota perdida')) : ((r.especie||'Animal') + ' encontrado');
+        const fotoTxt = r.tiene_foto === 'yes' ? ' · 📷 con foto' : '';
+        return '<div class="registro-card ' + (esPerdida?'perdida':'encontrada') + '">' +
+          '<span class="tag">' + (esPerdida?'😢 Perdida':'🐾 Encontrada') + '</span>' +
+          '<div class="titulo">' + titulo + '</div>' +
+          '<div class="detalle">' + (r.descripcion||'') + '</div>' +
+          '<div class="detalle">📍 ' + (r.ciudad||'') + (r.barrio?', '+r.barrio:'') + fotoTxt + '</div>' +
+          '<div class="meta">Reportado por ' + (r.nombre_contacto||'alguien') + ' ' + tiempoDesde(r.fecha_registro) + ' · Contacta vía <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a></div>' +
+          '</div>';
       }).join('');
-
     } catch (err) {
-      console.error('Error cargando registro:', err);
-      cont.innerHTML = '<div class="registro-error">No pudimos cargar el registro público en este momento. Intenta de nuevo en unos minutos.</div>';
+      cont.innerHTML = '<div class="registro-error">No pudimos cargar el registro. Dale a "Actualizar lista" en unos segundos.</div>';
     }
   }
 
-  // Carga el registro público automáticamente cuando la página termina de cargar.
-  // Esperar a 'load' evita que el JSONP compita con otros scripts al inicio.
-  if (document.readyState === 'complete') {
-    cargarRegistro();
-  } else {
-    window.addEventListener('load', cargarRegistro);
-  }
-
+  if (document.readyState === 'complete') cargarRegistro();
+  else window.addEventListener('load', cargarRegistro);
 </script>
 
-</body></html>
+</body>
+</html>
