@@ -540,38 +540,41 @@
   };
 
   // Técnica JSONP: carga los datos como un <script>, no como fetch(),
-  // para evitar el bloqueo de CORS que da Google Apps Script.
-  function jsonp(url, params) {
+  // Carga datos desde Apps Script vía JSONP. Confía SOLO en el callback + timeout,
+  // sin usar onerror (que da falsos negativos tras la redirección 302 de Apps Script).
+  // Este es el método confirmado que funciona con Google Apps Script.
+  function cargarDatos(url, params) {
     return new Promise((resolve, reject) => {
-      const callbackName = 'jsonp_cb_' + Math.random().toString(36).slice(2, 11);
-      const allParams = Object.assign({}, params, { callback: callbackName });
-
+      const cb = 'cb_' + Math.random().toString(36).slice(2, 11) + Date.now();
+      const allParams = Object.assign({}, params, { callback: cb });
       const query = Object.keys(allParams)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(allParams[k] == null ? '' : allParams[k]))
         .join('&');
 
+      let listo = false;
       const timeout = setTimeout(() => {
+        if (listo) return;
+        listo = true;
         cleanup();
         reject(new Error('Tiempo de espera agotado conectando con el registro'));
-      }, 15000);
+      }, 12000);
 
       function cleanup() {
-        clearTimeout(timeout);
-        delete window[callbackName];
+        delete window[cb];
         if (script.parentNode) script.parentNode.removeChild(script);
       }
 
-      window[callbackName] = function (data) {
+      window[cb] = function (data) {
+        if (listo) return;
+        listo = true;
+        clearTimeout(timeout);
         cleanup();
         resolve(data);
       };
 
       const script = document.createElement('script');
-      script.src = url + '?' + query;
-      script.onerror = () => {
-        cleanup();
-        reject(new Error('Error de red al conectar con el registro'));
-      };
+      script.src = url + '?' + query + '&t=' + Date.now();
+      // NO usamos script.onerror: da falsos negativos con la redirección de Apps Script.
       document.body.appendChild(script);
     });
   }
@@ -759,7 +762,7 @@
     cont.innerHTML = '<div class="registro-loading">Cargando registros...</div>';
 
     try {
-      const data = await jsonp(APPS_SCRIPT_URL, { action: 'list' });
+      const data = await cargarDatos(APPS_SCRIPT_URL, { action: 'list' });
 
       if (!data.success) throw new Error(data.error || 'Error desconocido');
 
