@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<!-- saved from url=(0103)file:///Users/juangarciaamador/Documents/Claude/Projects/Criollo%20VCR%20Engine/mascotas-terremoto.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criollo — Mascotas perdidas · Terremoto Colombia</title>
   <style>
@@ -163,6 +162,7 @@
       transition: opacity 0.15s;
     }
     .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .lost .submit-btn { background: #d32f2f; color: #fff; }
     .found .submit-btn { background: #2e7d32; color: #fff; }
 
@@ -179,6 +179,19 @@
     .success-msg h3 { color: #2e7d32; margin-bottom: 8px; }
     .success-msg p { font-size: 14px; color: #555; }
 
+    .error-msg {
+      display: none;
+      background: #fdecea;
+      border: 1.5px solid #f5c6cb;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #a12622;
+    }
+    .error-msg.visible { display: block; }
+
     .registry-link {
       background: #fff;
       border: 1.5px solid #e8e8e8;
@@ -193,6 +206,7 @@
       color: #1a1a1a;
       font-weight: 700;
       text-decoration: none;
+      cursor: pointer;
     }
     .registry-link a:hover { text-decoration: underline; }
 
@@ -209,6 +223,68 @@
       color: #f5c842;
       font-weight: 700;
       text-decoration: none;
+    }
+
+    /* Registro público */
+    #registro {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 2px dashed #ddd;
+    }
+    #registro h2 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+    #registro .registro-sub {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 16px;
+    }
+    .registro-refresh {
+      background: none;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #555;
+      margin-bottom: 16px;
+    }
+    .registro-refresh:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+    .registro-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-left: 4px solid #d32f2f;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .registro-card.encontrada { border-left-color: #2e7d32; }
+    .registro-card .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      background: #fdecea;
+      color: #d32f2f;
+    }
+    .registro-card.encontrada .tag { background: #e8f5e9; color: #2e7d32; }
+    .registro-card .titulo { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .registro-card .detalle { color: #555; margin-bottom: 4px; }
+    .registro-card .meta { color: #999; font-size: 12px; margin-top: 6px; }
+
+    .registro-empty, .registro-loading, .registro-error {
+      font-size: 13px;
+      color: #999;
+      text-align: center;
+      padding: 24px 0;
     }
   </style>
 </head>
@@ -231,21 +307,21 @@
   </div>
 
   <div class="registry-link">
-    ¿Ya registraste tu mascota? <a href="file:///Users/juangarciaamador/Documents/Claude/Projects/Criollo%20VCR%20Engine/registro.html">Ver el registro público de mascotas →</a>
+    ¿Ya registraste tu mascota? <a href="#registro">Ver el registro público de mascotas →</a>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active-lost" onclick="showTab(&#39;lost&#39;)">
+    <button class="tab-btn active-lost" onclick="showTab('lost')">
       😢 Perdí mi mascota
     </button>
-    <button class="tab-btn" onclick="showTab(&#39;found&#39;)">
+    <button class="tab-btn" onclick="showTab('found')">
       🐾 Encontré un animal
     </button>
   </div>
 
   <!-- FORMULARIO: PERDÍ MI MASCOTA -->
   <div class="form-panel lost visible" id="panel-lost">
-    <form id="form-lost" onsubmit="handleSubmit(event, &#39;lost&#39;)">
+    <form id="form-lost" onsubmit="handleSubmit(event, 'lost')">
 
       <div class="section">
         <div class="section-header">La mascota</div>
@@ -253,11 +329,11 @@
           <div class="row-2">
             <div class="field">
               <label>Nombre de la mascota</label>
-              <input type="text" name="animal_name" placeholder="Ej: Luna" required="">
+              <input type="text" name="animal_name" placeholder="Ej: Luna" required>
             </div>
             <div class="field">
               <label>Especie</label>
-              <select name="species" required="">
+              <select name="species" required>
                 <option value="">Seleccionar...</option>
                 <option value="dog">Perro 🐕</option>
                 <option value="cat">Gato 🐱</option>
@@ -268,23 +344,23 @@
 
           <div class="field">
             <label>Descripción física</label>
-            <textarea name="description" placeholder="Color, tamaño, raza, collar, marcas especiales..." required=""></textarea>
+            <textarea name="description" placeholder="Color, tamaño, raza, collar, marcas especiales..." required></textarea>
           </div>
 
           <div class="row-2">
             <div class="field">
               <label>Ciudad / Municipio</label>
-              <input type="text" name="city" placeholder="Ej: Pasto" required="">
+              <input type="text" name="city" placeholder="Ej: Pasto" required>
             </div>
             <div class="field">
               <label>Barrio / Sector donde se perdió</label>
-              <input type="text" name="neighborhood" placeholder="Ej: Centro" required="">
+              <input type="text" name="neighborhood" placeholder="Ej: Centro" required>
             </div>
           </div>
 
           <div class="field">
             <label>¿Cuándo se perdió?</label>
-            <input type="text" name="lost_date" placeholder="Ej: Hoy en la mañana / 11 agosto" required="">
+            <input type="text" name="lost_date" placeholder="Ej: Hoy en la mañana / 11 agosto" required>
           </div>
         </div>
       </div>
@@ -294,12 +370,12 @@
         <div class="section-body">
           <div class="field">
             <label>Tu nombre</label>
-            <input type="text" name="owner_name" placeholder="Nombre completo" required="">
+            <input type="text" name="owner_name" placeholder="Nombre completo" required>
           </div>
 
           <div class="field">
             <label>WhatsApp <span class="opt">(con código de país)</span></label>
-            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required="">
+            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required>
           </div>
 
           <div class="field">
@@ -331,11 +407,14 @@
       <h3>✅ Registro recibido</h3>
       <p>Tu mascota quedó en el registro. Publicaremos el aviso y te contactamos si alguien la encuentra. Comparte este link con amigos y vecinos para ampliar la búsqueda.</p>
     </div>
+    <div class="error-msg" id="error-lost">
+      ⚠️ Hubo un problema enviando tu registro. Por favor intenta de nuevo, o repórtalo directo por Telegram: t.me/Crioollo_bot
+    </div>
   </div>
 
   <!-- FORMULARIO: ENCONTRÉ UN ANIMAL -->
   <div class="form-panel found" id="panel-found">
-    <form id="form-found" onsubmit="handleSubmit(event, &#39;found&#39;)">
+    <form id="form-found" onsubmit="handleSubmit(event, 'found')">
 
       <div class="section">
         <div class="section-header">El animal encontrado</div>
@@ -343,7 +422,7 @@
           <div class="row-2">
             <div class="field">
               <label>Especie</label>
-              <select name="species" required="">
+              <select name="species" required>
                 <option value="">Seleccionar...</option>
                 <option value="dog">Perro 🐕</option>
                 <option value="cat">Gato 🐱</option>
@@ -362,24 +441,24 @@
 
           <div class="field">
             <label>Descripción física</label>
-            <textarea name="description" placeholder="Color, tamaño, raza aproximada, marcas especiales, estado de salud..." required=""></textarea>
+            <textarea name="description" placeholder="Color, tamaño, raza aproximada, marcas especiales, estado de salud..." required></textarea>
           </div>
 
           <div class="row-2">
             <div class="field">
               <label>Ciudad / Municipio</label>
-              <input type="text" name="city" placeholder="Ej: Pasto" required="">
+              <input type="text" name="city" placeholder="Ej: Pasto" required>
             </div>
             <div class="field">
               <label>Barrio / Sector donde lo encontraste</label>
-              <input type="text" name="neighborhood" placeholder="Ej: El Jardín" required="">
+              <input type="text" name="neighborhood" placeholder="Ej: El Jardín" required>
             </div>
           </div>
 
           <div class="field">
             <label>¿Dónde está el animal ahora?</label>
             <div class="radio-group">
-              <label><input type="radio" name="animal_status" value="with_me" required=""> Conmigo / en mi casa</label>
+              <label><input type="radio" name="animal_status" value="with_me" required> Conmigo / en mi casa</label>
               <label><input type="radio" name="animal_status" value="street"> Sigue en la calle</label>
               <label><input type="radio" name="animal_status" value="shelter"> En un albergue</label>
             </div>
@@ -392,12 +471,12 @@
         <div class="section-body">
           <div class="field">
             <label>Tu nombre</label>
-            <input type="text" name="finder_name" placeholder="Nombre completo" required="">
+            <input type="text" name="finder_name" placeholder="Nombre completo" required>
           </div>
 
           <div class="field">
             <label>WhatsApp <span class="opt">(con código de país)</span></label>
-            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required="">
+            <input type="tel" name="whatsapp" placeholder="+57 300 000 0000" required>
           </div>
 
           <div class="field">
@@ -429,11 +508,34 @@
       <h3>✅ Registro recibido</h3>
       <p>Gracias por ayudar. Publicaremos el aviso y te contactamos si el dueño aparece. Eres parte de la red Criollo. 🐾</p>
     </div>
+    <div class="error-msg" id="error-found">
+      ⚠️ Hubo un problema enviando tu registro. Por favor intenta de nuevo, o repórtalo directo por Telegram: t.me/Crioollo_bot
+    </div>
+  </div>
+
+  <!-- REGISTRO PÚBLICO -->
+  <div id="registro">
+    <h2>📋 Registro público de mascotas</h2>
+    <p class="registro-sub">Todos los reportes de mascotas perdidas y encontradas, en orden del más reciente al más antiguo.</p>
+    <button class="registro-refresh" onclick="cargarRegistro()">🔄 Actualizar lista</button>
+    <div id="registro-lista">
+      <div class="registro-loading">Cargando registros...</div>
+    </div>
   </div>
 
 </div>
 
 <script>
+  // URL de tu Google Apps Script (Web App) conectado al Google Sheet
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHmIPQOLpxlOR5ZUWQ1XbowCLLGRTM_YA7idqNWlVP7CEtbRZCzaJebfbV282qqEPyxg/exec';
+
+  const SPECIES_LABELS = { dog: 'Perro 🐕', cat: 'Gato 🐱', other: 'Otro animal' };
+  const STATUS_LABELS = {
+    with_me: 'Está con quien lo encontró',
+    street: 'Sigue en la calle',
+    shelter: 'Está en un albergue'
+  };
+
   function showTab(tab) {
     document.getElementById('panel-lost').classList.remove('visible');
     document.getElementById('panel-found').classList.remove('visible');
@@ -448,62 +550,129 @@
     e.preventDefault();
     const form = e.target;
     const raw = Object.fromEntries(new FormData(form));
+    const submitBtn = form.querySelector('.submit-btn');
+    const errorEl = document.getElementById('error-' + type);
+    errorEl.classList.remove('visible');
 
-    // Normalizar nombres de campos para la API
-    const payload = {
-      type: type,
-      species: raw.species || null,
-      animal_name: raw.animal_name || null,
-      description: raw.description,
-      city: raw.city,
-      neighborhood: raw.neighborhood || null,
-      lost_or_found_date: raw.lost_date || null,
-      animal_status: raw.animal_status || null,
-      has_collar: raw.has_collar === 'yes',
-      has_photo: raw.has_photo === 'yes' || raw.has_photo === 'send',
-      reporter_name: raw.owner_name || raw.finder_name,
-      whatsapp: raw.whatsapp,
-      instagram: raw.instagram || null,
-      extra: raw.extra || null,
-    };
+    let payload;
+
+    if (type === 'lost') {
+      payload = {
+        tipo: 'perdida',
+        nombre_mascota: raw.animal_name || '',
+        especie: SPECIES_LABELS[raw.species] || raw.species || '',
+        descripcion: raw.description || '',
+        ciudad: raw.city || '',
+        barrio: raw.neighborhood || '',
+        fecha_perdida: raw.lost_date || '',
+        nombre_contacto: raw.owner_name || '',
+        whatsapp: raw.whatsapp || '',
+        instagram: raw.instagram || '',
+        tiene_foto: raw.has_photo || 'no',
+        info_adicional: raw.extra || ''
+      };
+    } else {
+      const collarTxt = raw.has_collar === 'yes' ? 'Sí tiene collar/placa.' :
+                         raw.has_collar === 'no' ? 'No tiene collar.' : 'No se sabe si tiene collar.';
+      payload = {
+        tipo: 'encontrada',
+        nombre_mascota: '',
+        especie: SPECIES_LABELS[raw.species] || raw.species || '',
+        descripcion: (raw.description || '') + ' ' + collarTxt,
+        ciudad: raw.city || '',
+        barrio: raw.neighborhood || '',
+        fecha_perdida: '',
+        nombre_contacto: raw.finder_name || '',
+        whatsapp: raw.whatsapp || '',
+        instagram: raw.instagram || '',
+        tiene_foto: raw.has_photo || 'no',
+        info_adicional: (STATUS_LABELS[raw.animal_status] || '') + (raw.extra ? ' — ' + raw.extra : '')
+      };
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
 
     try {
-      const res = await fetch('https://criollo-vcr-engine-production.up.railway.app/api/emergency-report', {
+      const res = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita bloqueo de CORS
         body: JSON.stringify(payload)
       });
 
       const result = await res.json();
 
-      form.style.display = 'none';
-      const successEl = document.getElementById('success-' + type);
-      successEl.classList.add('visible');
+      if (!result.success) throw new Error(result.error || 'Error desconocido');
 
-      // Si hay matches, mostrar los contactos
-      if (result.matches && result.matches.length > 0) {
-        const m = result.matches[0];
-        successEl.innerHTML += `
-          <div style="margin-top:16px;padding:14px;background:#fff3cd;border:1.5px solid #ffc107;border-radius:8px;text-align:left;">
-            <strong>🎯 ¡Posible coincidencia encontrada!</strong><br/>
-            <span style="font-size:13px;color:#555;">
-              ${m.description}<br/>
-              📍 ${m.city}${m.neighborhood ? ', ' + m.neighborhood : ''}<br/>
-              📱 WhatsApp: <strong>${m.whatsapp}</strong>
-              ${m.instagram ? '<br/>📷 Instagram: ' + m.instagram : ''}
-            </span>
-          </div>`;
-      }
+      form.style.display = 'none';
+      document.getElementById('success-' + type).classList.add('visible');
+
+      // Refresca el listado público para que aparezca el nuevo registro
+      cargarRegistro();
 
     } catch (err) {
       console.error('Error enviando reporte:', err);
-      // Mostrar éxito igual — el dato puede estar guardado parcialmente
-      form.style.display = 'none';
-      document.getElementById('success-' + type).classList.add('visible');
+      errorEl.classList.add('visible');
+      submitBtn.disabled = false;
+      submitBtn.textContent = type === 'lost' ? 'Registrar mascota perdida →' : 'Registrar animal encontrado →';
     }
   }
+
+  function tiempoDesde(fechaISO) {
+    if (!fechaISO) return '';
+    const diffMs = Date.now() - new Date(fechaISO).getTime();
+    const horas = Math.floor(diffMs / 3600000);
+    if (horas < 1) return 'hace menos de 1 hora';
+    if (horas < 24) return `hace ${horas} hora${horas === 1 ? '' : 's'}`;
+    const dias = Math.floor(horas / 24);
+    return `hace ${dias} día${dias === 1 ? '' : 's'}`;
+  }
+
+  async function cargarRegistro() {
+    const cont = document.getElementById('registro-lista');
+    cont.innerHTML = '<div class="registro-loading">Cargando registros...</div>';
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL);
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error || 'Error desconocido');
+
+      const registros = data.registros || [];
+
+      if (registros.length === 0) {
+        cont.innerHTML = '<div class="registro-empty">Aún no hay registros públicos. ¡Sé el primero en reportar!</div>';
+        return;
+      }
+
+      cont.innerHTML = registros.map(r => {
+        const esPerdida = r.tipo === 'perdida';
+        const titulo = esPerdida
+          ? (r.nombre_mascota ? `${r.nombre_mascota} (${r.especie || 'mascota'})` : (r.especie || 'Mascota perdida'))
+          : `${r.especie || 'Animal'} encontrado`;
+        const fotoTxt = (r.tiene_foto === 'yes' || r.tiene_foto === 'send') ? ' · 📷 con foto' : '';
+
+        return `
+          <div class="registro-card ${esPerdida ? 'perdida' : 'encontrada'}">
+            <span class="tag">${esPerdida ? '😢 Perdida' : '🐾 Encontrada'}</span>
+            <div class="titulo">${titulo}</div>
+            <div class="detalle">${r.descripcion || ''}</div>
+            <div class="detalle">📍 ${r.ciudad || ''}${r.barrio ? ', ' + r.barrio : ''}${fotoTxt}</div>
+            <div class="meta">
+              Reportado por ${r.nombre_contacto || 'alguien'} ${tiempoDesde(r.fecha_registro)} ·
+              Contacta vía <a href="https://t.me/Crioollo_bot" target="_blank">t.me/Crioollo_bot</a>
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (err) {
+      console.error('Error cargando registro:', err);
+      cont.innerHTML = '<div class="registro-error">No pudimos cargar el registro público en este momento. Intenta de nuevo en unos minutos.</div>';
+    }
+  }
+
+  // Carga el registro público automáticamente al abrir la página
+  cargarRegistro();
 </script>
-
-
 
 </body></html>
