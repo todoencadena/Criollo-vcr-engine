@@ -346,6 +346,7 @@
               ${r.species ? `<span>${speciesLabel[r.species] || r.species}</span>` : ''}
               ${r.animal_status ? `<span>${statusLabel[r.animal_status] || r.animal_status}</span>` : ''}
               ${r.matched_with ? `<span style="color:#f5a623;font-weight:700;">⚡ Posible match</span>` : ''}
+              ${r.vcr_count > 0 ? `<span style="color:#4caf50;font-weight:700;">📋 ${r.vcr_count} VCR médico</span>` : ''}
             </div>
           </div>
           <div class="card-contact" id="contact-${i}">
