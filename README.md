@@ -249,3 +249,11 @@ Partnership: Animoca Brands
 **"If the event is untamperable and the subject is private, the yield modeling becomes a standard accounting exercise."**
 
 — Medici, Animoca Brands
+
+## 🐾 Animal Health Passport — Live Demo
+Built with Archie during eMerge AI Hackathon 2026
+
+**Passport page:** https://b087895d-cf0b-4786-a60c-fc6975c0ee0e.prototypes.archie.com/passport-landing.html
+
+**Emergency system:** https://todoencadena.github.io/Criollo-vcr-engine/mascotas-terremoto.html
+**Animal registry:** https://todoencadena.github.io/Criollo-vcr-engine/registro.html
