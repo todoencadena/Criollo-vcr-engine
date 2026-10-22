@@ -18,6 +18,9 @@
   ],
   "author": "Bastian (@todoencadena)",
   "license": "MIT",
+      "engines": {
+      "node": ">=22.0.0"
+    },
   "devDependencies": {
     "jest": "^29.7.0"
   },
