@@ -192,6 +192,33 @@
   </div>
 </div>
 
+<!-- Condición física -->
+<div class="section" id="seccion-fisica">
+  <div class="section-title">Condición física</div>
+  <div class="row">
+    <div class="field">
+      <label>Peso</label>
+      <span id="d-peso">—</span>
+    </div>
+    <div class="field">
+      <label>Estado corporal</label>
+      <span id="d-ec">—</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field" style="min-width:100%">
+      <label>Heridas / Marcas visibles</label>
+      <span id="d-heridas" style="font-size:14px;color:#c0cdd8">—</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field" style="min-width:100%">
+      <label>Discapacidad</label>
+      <span id="d-disc" style="font-size:14px;color:#c0cdd8">—</span>
+    </div>
+  </div>
+</div>
+
 <!-- Tipo de atención -->
 <div class="section">
   <div class="section-title">Atención registrada</div>
@@ -240,6 +267,10 @@
   const nombre  = p.get('nombre')  || '—';
   const especie = p.get('especie') || '—';
   const raza    = p.get('raza')    || '—';
+  const peso    = p.get('peso')    || '—';
+  const ec      = p.get('ec')      || '—';
+  const heridas = p.get('heridas') || '—';
+  const disc    = p.get('disc')    || '—';
   const tipo    = p.get('tipo')    || '—';
   const obs     = p.get('obs')     || '—';
   const vet     = p.get('vet')     || '—';
@@ -255,14 +286,23 @@
     desparasitacion:'🌿 Desparasitación'
   };
 
+  const ecLabel = {
+    muy_delgado: 'Muy delgado', delgado: 'Delgado',
+    ideal: 'Ideal ✓', sobrepeso: 'Sobrepeso', obeso: 'Obeso'
+  };
+
   document.getElementById('vcr-id-display').textContent = vcrId;
-  document.getElementById('d-nombre').textContent  = nombre;
-  document.getElementById('d-especie').textContent = especieLabel[especie] || especie;
-  document.getElementById('d-raza').textContent    = raza;
-  document.getElementById('d-tipo').textContent    = tipoLabel[tipo] || tipo;
-  document.getElementById('d-obs').textContent     = obs;
-  document.getElementById('d-vet').textContent     = vet;
-  document.getElementById('d-clinica').textContent = clinica;
+  document.getElementById('d-nombre').textContent   = nombre;
+  document.getElementById('d-especie').textContent  = especieLabel[especie] || especie;
+  document.getElementById('d-raza').textContent     = raza;
+  document.getElementById('d-peso').textContent     = peso;
+  document.getElementById('d-ec').textContent       = ecLabel[ec] || ec;
+  document.getElementById('d-heridas').textContent  = heridas;
+  document.getElementById('d-disc').textContent     = disc;
+  document.getElementById('d-tipo').textContent     = tipoLabel[tipo] || tipo;
+  document.getElementById('d-obs').textContent      = obs;
+  document.getElementById('d-vet').textContent      = vet;
+  document.getElementById('d-clinica').textContent  = clinica;
 
   // Fecha de hoy
   const hoy = new Date();
@@ -282,13 +322,17 @@
     .then(d => {
       if (d.vcr_id) {
         // Datos reales del servidor — sobreescribimos los de la URL
-        document.getElementById('d-nombre').textContent  = d.animal_nombre;
-        document.getElementById('d-especie').textContent = especieLabel[d.animal_especie] || d.animal_especie || '—';
-        document.getElementById('d-raza').textContent    = d.animal_raza || '—';
-        document.getElementById('d-tipo').textContent    = tipoLabel[d.tipo_atencion] || d.tipo_atencion;
-        document.getElementById('d-obs').textContent     = d.observaciones || '—';
-        document.getElementById('d-vet').textContent     = d.vet_nombre;
-        document.getElementById('d-clinica').textContent = d.vet_clinica;
+        document.getElementById('d-nombre').textContent   = d.animal_nombre;
+        document.getElementById('d-especie').textContent  = especieLabel[d.animal_especie] || d.animal_especie || '—';
+        document.getElementById('d-raza').textContent     = d.animal_raza || '—';
+        document.getElementById('d-peso').textContent     = d.peso || '—';
+        document.getElementById('d-ec').textContent       = ecLabel[d.estado_corporal] || d.estado_corporal || '—';
+        document.getElementById('d-heridas').textContent  = d.heridas_marcas || '—';
+        document.getElementById('d-disc').textContent     = d.discapacidad || '—';
+        document.getElementById('d-tipo').textContent     = tipoLabel[d.tipo_atencion] || d.tipo_atencion;
+        document.getElementById('d-obs').textContent      = d.observaciones || '—';
+        document.getElementById('d-vet').textContent      = d.vet_nombre;
+        document.getElementById('d-clinica').textContent  = d.vet_clinica;
         // Cuando carga del servidor, ocultamos el banner demo
         document.getElementById('demo-banner').style.display = 'none';
         document.title = `Pasaporte de ${d.animal_nombre} — Criollo VCR`;
@@ -307,3 +351,4 @@
 
 </body>
 </html>
+
