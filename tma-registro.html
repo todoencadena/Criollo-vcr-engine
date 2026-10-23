@@ -252,7 +252,39 @@
     </div>
   </div>
 
-  <!-- Sección 2: Tipo de consulta -->
+  <!-- Sección 2: Condición física -->
+  <div class="section">
+    <div class="section-title">Condición física</div>
+    <div class="row">
+      <div class="field">
+        <label>Peso</label>
+        <input id="peso" type="text" placeholder="ej. 5.2 kg" />
+      </div>
+      <div class="field">
+        <label>Estado corporal</label>
+        <select id="estado-corporal">
+          <option value="">— seleccionar —</option>
+          <option value="muy_delgado">Muy delgado</option>
+          <option value="delgado">Delgado</option>
+          <option value="ideal">Ideal ✓</option>
+          <option value="sobrepeso">Sobrepeso</option>
+          <option value="obeso">Obeso</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Heridas o marcas visibles</label>
+      <textarea id="heridas-marcas" rows="2"
+        placeholder="ej. Cicatriz en pata trasera derecha, lunar en oreja izq."></textarea>
+    </div>
+    <div class="field">
+      <label>Discapacidad</label>
+      <input id="discapacidad" type="text"
+        placeholder="ej. Ninguna, ceguera parcial, amputación..." />
+    </div>
+  </div>
+
+  <!-- Sección 3: Tipo de consulta -->
   <div class="section">
     <div class="section-title">Tipo de consulta</div>
     <div class="tipo-grid" id="tipo-grid">
@@ -354,12 +386,16 @@ async function enviarRegistro() {
   document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
 
   // Leemos los valores
-  const animalNombre  = document.getElementById('animal-nombre').value.trim();
-  const animalEspecie = document.getElementById('animal-especie').value;
-  const animalRaza    = document.getElementById('animal-raza').value.trim();
-  const observaciones = document.getElementById('observaciones').value.trim();
-  const vetNombre     = document.getElementById('vet-nombre').value.trim();
-  const vetClinica    = document.getElementById('vet-clinica').value.trim();
+  const animalNombre    = document.getElementById('animal-nombre').value.trim();
+  const animalEspecie   = document.getElementById('animal-especie').value;
+  const animalRaza      = document.getElementById('animal-raza').value.trim();
+  const peso            = document.getElementById('peso').value.trim();
+  const estadoCorporal  = document.getElementById('estado-corporal').value;
+  const heridasMarcas   = document.getElementById('heridas-marcas').value.trim();
+  const discapacidad    = document.getElementById('discapacidad').value.trim();
+  const observaciones   = document.getElementById('observaciones').value.trim();
+  const vetNombre       = document.getElementById('vet-nombre').value.trim();
+  const vetClinica      = document.getElementById('vet-clinica').value.trim();
 
   // Validación básica
   let hayError = false;
@@ -392,15 +428,18 @@ async function enviarRegistro() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        animal_nombre:  animalNombre,
-        animal_especie: animalEspecie,
-        animal_raza:    animalRaza,
-        tipo_atencion:  tipoSeleccionado,
-        observaciones:  observaciones,
-        vet_nombre:     vetNombre,
-        vet_clinica:    vetClinica,
-        // Telegram nos da el usuario si estamos dentro del app
-        telegram_user:  tg?.initDataUnsafe?.user?.username || 'web'
+        animal_nombre:   animalNombre,
+        animal_especie:  animalEspecie,
+        animal_raza:     animalRaza,
+        peso:            peso            || null,
+        estado_corporal: estadoCorporal  || null,
+        heridas_marcas:  heridasMarcas   || null,
+        discapacidad:    discapacidad    || null,
+        tipo_atencion:   tipoSeleccionado,
+        observaciones:   observaciones,
+        vet_nombre:      vetNombre,
+        vet_clinica:     vetClinica,
+        telegram_user:   tg?.initDataUnsafe?.user?.username || 'web'
       })
     });
 
@@ -423,9 +462,13 @@ async function enviarRegistro() {
       id:      vcrDemo,
       nombre:  animalNombre,
       especie: animalEspecie,
-      raza:    animalRaza || '—',
+      raza:    animalRaza      || '—',
+      peso:    peso            || '—',
+      ec:      estadoCorporal  || '—',
+      heridas: heridasMarcas   || '—',
+      disc:    discapacidad    || '—',
       tipo:    tipoSeleccionado,
-      obs:     observaciones || '—',
+      obs:     observaciones   || '—',
       vet:     vetNombre,
       clinica: vetClinica
     });
@@ -514,3 +557,4 @@ function mostrarExito(vcrId, vcrUrl) {
 
 </body>
 </html>
+
