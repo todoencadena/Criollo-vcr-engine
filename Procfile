@@ -1,1 +1,1 @@
-web: node vcr-api.js
+web: node server.js
