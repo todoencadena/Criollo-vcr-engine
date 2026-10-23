@@ -217,6 +217,10 @@ app.post('/api/vcr-registro', async (req, res) => {
     animal_nombre,
     animal_especie,
     animal_raza,
+    peso,
+    estado_corporal,
+    heridas_marcas,
+    discapacidad,
     tipo_atencion,
     observaciones,
     vet_nombre,
@@ -238,19 +242,24 @@ app.post('/api/vcr-registro', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO vcr_registros
         (vcr_id, animal_nombre, animal_especie, animal_raza,
+         peso, estado_corporal, heridas_marcas, discapacidad,
          tipo_atencion, observaciones, vet_nombre, vet_clinica, telegram_user)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING vcr_id, created_at`,
       [
         vcr_id,
         animal_nombre,
-        animal_especie || null,
-        animal_raza    || null,
-        tipo_atencion  || 'consulta',
-        observaciones  || null,
+        animal_especie   || null,
+        animal_raza      || null,
+        peso             || null,
+        estado_corporal  || null,
+        heridas_marcas   || null,
+        discapacidad     || null,
+        tipo_atencion    || 'consulta',
+        observaciones    || null,
         vet_nombre,
         vet_clinica,
-        telegram_user  || null,
+        telegram_user    || null,
       ]
     );
 
@@ -278,6 +287,7 @@ app.get('/api/pasaporte/:vcr_id', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT vcr_id, animal_nombre, animal_especie, animal_raza,
+              peso, estado_corporal, heridas_marcas, discapacidad,
               tipo_atencion, observaciones, vet_nombre, vet_clinica, created_at
        FROM vcr_registros
        WHERE vcr_id = $1`,
@@ -300,3 +310,4 @@ app.get('/api/pasaporte/:vcr_id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Criollo Emergency API corriendo en puerto ${PORT}`);
 });
+
