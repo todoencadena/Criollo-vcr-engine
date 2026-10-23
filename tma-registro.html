@@ -418,7 +418,7 @@ async function enviarRegistro() {
       Cuando el endpoint esté listo, elimina este bloque catch.
     */
     const vcrDemo = 'VCR-' + Math.random().toString(36).substr(2,8).toUpperCase();
-    const urlDemo = `${API}/pasaporte/${vcrDemo}`;
+    const urlDemo = `https://todoencadena.github.io/Criollo-vcr-engine/pasaporte.html?id=${vcrDemo}`;
     mostrarExito(vcrDemo, urlDemo);
   }
 }
