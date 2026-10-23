@@ -1,33 +1,14 @@
 {
   "name": "criollo-vcr-engine",
-  "version": "0.1.0",
-  "description": "Privacy-first VCR Minting Engine for verifiable animal care events",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Criollo VCR Engine - Veterinary Medical Records on Solana",
+  "main": "vcr-api.js",
   "scripts": {
-    "start": "node vcr-api.js",
-    "test": "jest --runInBand",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
-  },
-  "keywords": [
-    "blockchain",
-    "privacy",
-    "animal-rescue",
-    "vcr",
-    "nft",
-    "erc1155"
-  ],
-  "author": "Bastian (@todoencadena)",
-  "license": "MIT",
-      "engines": {
-      "node": ">=22.0.0"
-    },
-  "devDependencies": {
-    "express": "^4.18.0",
-"cors": "^2.8.5"
-    "jest": "^29.7.0"
+    "start": "node vcr-api.js"
   },
   "dependencies": {
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
     "pg": "^8.20.0"
   }
 }
