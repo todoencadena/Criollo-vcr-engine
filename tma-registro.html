@@ -207,6 +207,29 @@
       font-size: 12px;
       margin-top: 4px;
     }
+
+    /* Language toggle */
+    .lang-toggle {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+    }
+    .lang-btn {
+      background: rgba(0,0,0,0.3);
+      border: 1.5px solid rgba(13,27,42,0.4);
+      color: #0D1B2A;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .lang-btn.active {
+      background: #0D1B2A;
+      color: var(--gold);
+      border-color: #0D1B2A;
+    }
   </style>
 </head>
 <body>
@@ -219,7 +242,11 @@
   <div class="logo">C</div>
   <div>
     <h1>Criollo VCR</h1>
-    <p>Registrar consulta veterinaria</p>
+    <p data-i18n="header_sub">Registrar consulta veterinaria</p>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
   </div>
 </div>
 
@@ -230,88 +257,88 @@
 
   <!-- Sección 1: El animal -->
   <div class="section">
-    <div class="section-title">El animal</div>
+    <div class="section-title" data-i18n="sec_animal">El animal</div>
     <div class="field">
-      <label>Nombre del animal</label>
-      <input id="animal-nombre" type="text" placeholder="ej. Luna" autocomplete="off" />
-      <div class="error-msg" id="err-nombre">Ingresa el nombre del animal</div>
+      <label data-i18n="lbl_nombre">Nombre del animal</label>
+      <input id="animal-nombre" type="text" placeholder="ej. Luna" autocomplete="off" data-i18n-ph="ph_nombre" />
+      <div class="error-msg" id="err-nombre" data-i18n="err_nombre">Ingresa el nombre del animal</div>
     </div>
     <div class="row">
       <div class="field">
-        <label>Especie</label>
+        <label data-i18n="lbl_especie">Especie</label>
         <select id="animal-especie">
-          <option value="perro">Perro 🐕</option>
-          <option value="gato">Gato 🐱</option>
-          <option value="otro">Otro</option>
+          <option value="perro" data-i18n="opt_perro">Perro 🐕</option>
+          <option value="gato" data-i18n="opt_gato">Gato 🐱</option>
+          <option value="otro" data-i18n="opt_otro">Otro</option>
         </select>
       </div>
       <div class="field">
-        <label>Raza (opcional)</label>
-        <input id="animal-raza" type="text" placeholder="ej. Poodle" />
+        <label data-i18n="lbl_raza">Raza (opcional)</label>
+        <input id="animal-raza" type="text" placeholder="ej. Poodle" data-i18n-ph="ph_raza" />
       </div>
     </div>
   </div>
 
   <!-- Sección 2: Condición física -->
   <div class="section">
-    <div class="section-title">Condición física</div>
+    <div class="section-title" data-i18n="sec_fisica">Condición física</div>
     <div class="row">
       <div class="field">
-        <label>Peso</label>
-        <input id="peso" type="text" placeholder="ej. 5.2 kg" />
+        <label data-i18n="lbl_peso">Peso</label>
+        <input id="peso" type="text" placeholder="ej. 5.2 kg" data-i18n-ph="ph_peso" />
       </div>
       <div class="field">
-        <label>Estado corporal</label>
+        <label data-i18n="lbl_ec">Estado corporal</label>
         <select id="estado-corporal">
-          <option value="">— seleccionar —</option>
-          <option value="muy_delgado">Muy delgado</option>
-          <option value="delgado">Delgado</option>
-          <option value="ideal">Ideal ✓</option>
-          <option value="sobrepeso">Sobrepeso</option>
-          <option value="obeso">Obeso</option>
+          <option value="" data-i18n="opt_sel">— seleccionar —</option>
+          <option value="muy_delgado" data-i18n="opt_muydelgado">Muy delgado</option>
+          <option value="delgado" data-i18n="opt_delgado">Delgado</option>
+          <option value="ideal" data-i18n="opt_ideal">Ideal ✓</option>
+          <option value="sobrepeso" data-i18n="opt_sobrepeso">Sobrepeso</option>
+          <option value="obeso" data-i18n="opt_obeso">Obeso</option>
         </select>
       </div>
     </div>
     <div class="field">
-      <label>Heridas o marcas visibles</label>
-      <textarea id="heridas-marcas" rows="2"
+      <label data-i18n="lbl_heridas">Heridas o marcas visibles</label>
+      <textarea id="heridas-marcas" rows="2" data-i18n-ph="ph_heridas"
         placeholder="ej. Cicatriz en pata trasera derecha, lunar en oreja izq."></textarea>
     </div>
     <div class="field">
-      <label>Discapacidad</label>
-      <input id="discapacidad" type="text"
+      <label data-i18n="lbl_disc">Discapacidad</label>
+      <input id="discapacidad" type="text" data-i18n-ph="ph_disc"
         placeholder="ej. Ninguna, ceguera parcial, amputación..." />
     </div>
   </div>
 
   <!-- Sección 3: Tipo de consulta -->
   <div class="section">
-    <div class="section-title">Tipo de consulta</div>
+    <div class="section-title" data-i18n="sec_tipo">Tipo de consulta</div>
     <div class="tipo-grid" id="tipo-grid">
-      <div class="tipo-btn selected" data-tipo="vacuna">💉 Vacuna</div>
-      <div class="tipo-btn" data-tipo="cirugia">🔬 Cirugía</div>
-      <div class="tipo-btn" data-tipo="consulta">📋 Consulta</div>
-      <div class="tipo-btn" data-tipo="desparasitacion">🌿 Desparasitación</div>
+      <div class="tipo-btn selected" data-tipo="vacuna" data-i18n="tipo_vacuna">💉 Vacuna</div>
+      <div class="tipo-btn" data-tipo="cirugia" data-i18n="tipo_cirugia">🔬 Cirugía</div>
+      <div class="tipo-btn" data-tipo="consulta" data-i18n="tipo_consulta">📋 Consulta</div>
+      <div class="tipo-btn" data-tipo="desparasitacion" data-i18n="tipo_despar">🌿 Desparasitación</div>
     </div>
     <div class="field">
-      <label>Observaciones / Diagnóstico</label>
-      <textarea id="observaciones" rows="3"
+      <label data-i18n="lbl_obs">Observaciones / Diagnóstico</label>
+      <textarea id="observaciones" rows="3" data-i18n-ph="ph_obs"
         placeholder="ej. Vacuna antirrábica aplicada. Próxima dosis en 12 meses."></textarea>
     </div>
   </div>
 
-  <!-- Sección 3: El veterinario -->
+  <!-- Sección 4: El veterinario -->
   <div class="section">
-    <div class="section-title">El veterinario</div>
+    <div class="section-title" data-i18n="sec_vet">El veterinario</div>
     <div class="field">
-      <label>Nombre del veterinario</label>
-      <input id="vet-nombre" type="text" placeholder="ej. Dr. Pérez" />
-      <div class="error-msg" id="err-vet">Ingresa el nombre del veterinario</div>
+      <label data-i18n="lbl_vetnom">Nombre del veterinario</label>
+      <input id="vet-nombre" type="text" placeholder="ej. Dr. Pérez" data-i18n-ph="ph_vetnom" />
+      <div class="error-msg" id="err-vet" data-i18n="err_vet">Ingresa el nombre del veterinario</div>
     </div>
     <div class="field">
-      <label>Clínica / Hospital</label>
-      <input id="vet-clinica" type="text" placeholder="ej. VetSalud Bogotá" />
-      <div class="error-msg" id="err-clinica">Ingresa el nombre de la clínica</div>
+      <label data-i18n="lbl_clinica">Clínica / Hospital</label>
+      <input id="vet-clinica" type="text" placeholder="ej. VetSalud Bogotá" data-i18n-ph="ph_clinica" />
+      <div class="error-msg" id="err-clinica" data-i18n="err_clinica">Ingresa el nombre de la clínica</div>
     </div>
   </div>
 
@@ -336,17 +363,17 @@
 
   <div class="vcr-id" id="vcr-link">—</div>
 
-  <button class="share-btn" id="btn-compartir">
+  <button class="share-btn" id="btn-compartir" data-i18n="btn_compartir">
     📤 Compartir VCR con el dueño
   </button>
-  <button class="close-btn" id="btn-cerrar">
+  <button class="close-btn" id="btn-cerrar" data-i18n="btn_cerrar">
     Cerrar
   </button>
 </div>
 
 <!-- Botón fijo abajo -->
 <div class="btn-fixed" id="btn-area">
-  <button class="btn-generar" id="btn-generar" onclick="enviarRegistro()">
+  <button class="btn-generar" id="btn-generar" onclick="enviarRegistro()" data-i18n="btn_generar">
     Generar VCR y QR ▶
   </button>
 </div>
@@ -416,7 +443,7 @@ async function enviarRegistro() {
   // Deshabilitamos el botón mientras enviamos
   const btn = document.getElementById('btn-generar');
   btn.disabled = true;
-  btn.textContent = 'Guardando...';
+  btn.textContent = T[currentLang].guardando;
 
   try {
     /*
@@ -528,7 +555,7 @@ function mostrarExito(vcrId, vcrUrl) {
         }).catch(() => {});
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(vcrUrl).then(() => {
-          document.getElementById('btn-compartir').textContent = '✅ Link copiado';
+          document.getElementById('btn-compartir').textContent = T[currentLang].link_copiado;
         }).catch(() => {
           prompt('Copia este link:', vcrUrl);
         });
@@ -543,18 +570,123 @@ function mostrarExito(vcrId, vcrUrl) {
     if (enTelegram) {
       tg.close();
     } else {
-      // En navegador normal: volvemos al formulario
       document.getElementById('pantalla-exito').style.display = 'none';
       document.getElementById('formulario').style.display = 'block';
       document.getElementById('btn-area').style.display = 'block';
-      document.getElementById('btn-generar').disabled = false;
-      document.getElementById('btn-generar').textContent = 'Generar VCR y QR ▶';
+      const btnG = document.getElementById('btn-generar');
+      btnG.disabled = false;
+      btnG.textContent = T[currentLang].btn_generar;
       document.getElementById('qr-canvas').innerHTML = '';
     }
   };
+}
+
+// ── Sistema de traducciones ──────────────────────────────────────────────────
+const T = {
+  es: {
+    header_sub: 'Registrar consulta veterinaria',
+    sec_animal: 'El animal',
+    lbl_nombre: 'Nombre del animal',        ph_nombre: 'ej. Luna',
+    lbl_especie: 'Especie',
+    opt_perro: 'Perro 🐕', opt_gato: 'Gato 🐱', opt_otro: 'Otro',
+    lbl_raza: 'Raza (opcional)',             ph_raza: 'ej. Poodle',
+    sec_fisica: 'Condición física',
+    lbl_peso: 'Peso',                        ph_peso: 'ej. 5.2 kg',
+    lbl_ec: 'Estado corporal',
+    opt_sel: '— seleccionar —',
+    opt_muydelgado: 'Muy delgado', opt_delgado: 'Delgado',
+    opt_ideal: 'Ideal ✓', opt_sobrepeso: 'Sobrepeso', opt_obeso: 'Obeso',
+    lbl_heridas: 'Heridas o marcas visibles',
+    ph_heridas: 'ej. Cicatriz en pata trasera derecha, lunar en oreja izq.',
+    lbl_disc: 'Discapacidad',
+    ph_disc: 'ej. Ninguna, ceguera parcial, amputación...',
+    sec_tipo: 'Tipo de consulta',
+    tipo_vacuna: '💉 Vacuna', tipo_cirugia: '🔬 Cirugía',
+    tipo_consulta: '📋 Consulta', tipo_despar: '🌿 Desparasitación',
+    lbl_obs: 'Observaciones / Diagnóstico',
+    ph_obs: 'ej. Vacuna antirrábica aplicada. Próxima dosis en 12 meses.',
+    sec_vet: 'El veterinario',
+    lbl_vetnom: 'Nombre del veterinario',    ph_vetnom: 'ej. Dr. Pérez',
+    err_nombre: 'Ingresa el nombre del animal',
+    err_vet: 'Ingresa el nombre del veterinario',
+    err_clinica: 'Ingresa el nombre de la clínica',
+    lbl_clinica: 'Clínica / Hospital',       ph_clinica: 'ej. VetSalud Bogotá',
+    btn_generar: 'Generar VCR y QR ▶',
+    btn_compartir: '📤 Compartir VCR con el dueño',
+    btn_cerrar: 'Cerrar',
+    guardando: 'Guardando...',
+    vcr_titulo: 'VCR generado',
+    vcr_sub: 'El registro médico quedó guardado.<br>Comparte este QR con el dueño.',
+    link_copiado: '✅ Link copiado',
+  },
+  en: {
+    header_sub: 'Register veterinary visit',
+    sec_animal: 'The animal',
+    lbl_nombre: 'Animal name',               ph_nombre: 'e.g. Luna',
+    lbl_especie: 'Species',
+    opt_perro: 'Dog 🐕', opt_gato: 'Cat 🐱', opt_otro: 'Other',
+    lbl_raza: 'Breed (optional)',            ph_raza: 'e.g. Poodle',
+    sec_fisica: 'Physical condition',
+    lbl_peso: 'Weight',                      ph_peso: 'e.g. 5.2 kg',
+    lbl_ec: 'Body condition',
+    opt_sel: '— select —',
+    opt_muydelgado: 'Very thin', opt_delgado: 'Thin',
+    opt_ideal: 'Ideal ✓', opt_sobrepeso: 'Overweight', opt_obeso: 'Obese',
+    lbl_heridas: 'Wounds or visible marks',
+    ph_heridas: 'e.g. Scar on right hind leg, mark on left ear.',
+    lbl_disc: 'Disability',
+    ph_disc: 'e.g. None, partial blindness, amputation...',
+    sec_tipo: 'Visit type',
+    tipo_vacuna: '💉 Vaccine', tipo_cirugia: '🔬 Surgery',
+    tipo_consulta: '📋 Checkup', tipo_despar: '🌿 Deworming',
+    lbl_obs: 'Notes / Diagnosis',
+    ph_obs: 'e.g. Rabies vaccine applied. Next dose in 12 months.',
+    sec_vet: 'The veterinarian',
+    lbl_vetnom: 'Veterinarian name',          ph_vetnom: 'e.g. Dr. Smith',
+    err_nombre: 'Enter the animal\'s name',
+    err_vet: 'Enter the veterinarian\'s name',
+    err_clinica: 'Enter the clinic name',
+    lbl_clinica: 'Clinic / Hospital',         ph_clinica: 'e.g. VetHealth NYC',
+    btn_generar: 'Generate VCR and QR ▶',
+    btn_compartir: '📤 Share VCR with owner',
+    btn_cerrar: 'Close',
+    guardando: 'Saving...',
+    vcr_titulo: 'VCR generated',
+    vcr_sub: 'The medical record has been saved.<br>Share this QR with the owner.',
+    link_copiado: '✅ Link copied',
+  }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.documentElement.lang = lang;
+  const t = T[lang];
+
+  // Textos
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // Placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  // Pantalla éxito (si visible)
+  const titulo = document.querySelector('#pantalla-exito h2');
+  if (titulo) titulo.textContent = t.vcr_titulo;
+  const sub = document.querySelector('#pantalla-exito p');
+  if (sub) sub.innerHTML = t.vcr_sub;
 }
 </script>
 
 </body>
 </html>
+
 
