@@ -274,8 +274,30 @@
     hoy.toLocaleDateString('es-CO', { day: '2-digit' }) + '<br>' +
     hoy.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
 
-  // Modo demo
-  document.getElementById('demo-banner').style.display = 'block';
+  // Si hay datos en la URL (modo demo o recién generado), los mostramos de inmediato
+  // Y también intentamos cargar desde el servidor para tener los datos persistidos
+  const API = 'https://attractive-communication-production-aa76.up.railway.app';
+  fetch(`${API}/api/pasaporte/${vcrId}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.vcr_id) {
+        // Datos reales del servidor — sobreescribimos los de la URL
+        document.getElementById('d-nombre').textContent  = d.animal_nombre;
+        document.getElementById('d-especie').textContent = especieLabel[d.animal_especie] || d.animal_especie || '—';
+        document.getElementById('d-raza').textContent    = d.animal_raza || '—';
+        document.getElementById('d-tipo').textContent    = tipoLabel[d.tipo_atencion] || d.tipo_atencion;
+        document.getElementById('d-obs').textContent     = d.observaciones || '—';
+        document.getElementById('d-vet').textContent     = d.vet_nombre;
+        document.getElementById('d-clinica').textContent = d.vet_clinica;
+        // Cuando carga del servidor, ocultamos el banner demo
+        document.getElementById('demo-banner').style.display = 'none';
+        document.title = `Pasaporte de ${d.animal_nombre} — Criollo VCR`;
+      }
+    })
+    .catch(() => {
+      // Si falla la carga del servidor, dejamos los datos de la URL (modo demo)
+      document.getElementById('demo-banner').style.display = 'block';
+    });
 
   // Título dinámico
   document.title = nombre !== '—'
