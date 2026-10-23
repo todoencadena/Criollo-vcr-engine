@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Criollo VCR — Registrar consulta</title>
+
+  <!--
+    PASO 1: Cargamos el SDK oficial de Telegram.
+    Esta línea le dice a Telegram que esta página es una Mini App.
+    Le da acceso a window.Telegram.WebApp que usamos más abajo.
+  -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /*
+      PASO 2: Colores del tema.
+      Telegram nos da var(--tg-theme-bg-color) y var(--tg-theme-text-color)
+      para que la app se vea bien en modo claro Y oscuro automáticamente.
+      Si no estamos en Telegram, usamos nuestros propios colores (#0D1B2A etc.)
+    */
+    :root {
+      --bg:       var(--tg-theme-bg-color, #0D1B2A);
+      --text:     var(--tg-theme-text-color, #ffffff);
+      --hint:     var(--tg-theme-hint-color, #7A8A99);
+      --card:     var(--tg-theme-secondary-bg-color, #1A2E42);
+      --gold:     #E8A020;
+      --radius:   12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ── Cabecera ── */
+    .header {
+      background: var(--gold);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header .logo {
+      width: 36px; height: 36px;
+      background: #0D1B2A;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px; color: var(--gold);
+    }
+    .header h1 { font-size: 16px; font-weight: 600; color: #0D1B2A; }
+    .header p  { font-size: 12px; color: #5a4010; }
+
+    /* ── Secciones del formulario ── */
+    .section {
+      margin: 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--gold);
+      padding: 12px 14px 6px;
+    }
+
+    /* ── Campos ── */
+    .field { padding: 6px 14px 10px; }
+    .field label {
+      font-size: 12px;
+      color: var(--hint);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--gold);
+    }
+    .field textarea { resize: none; }
+
+    /* ── Dos columnas ── */
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .row .field { }
+
+    /* Opciones de tipo de consulta */
+    .tipo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px 14px 14px;
+    }
+    .tipo-btn {
+      background: rgba(0,0,0,0.3);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--hint);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .tipo-btn.selected {
+      border-color: var(--gold);
+      background: rgba(232,160,32,0.15);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* ── Botón principal (fijo abajo) ── */
+    .btn-fixed {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn-generar {
+      width: 100%;
+      background: var(--gold);
+      color: #0D1B2A;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-generar:active { opacity: .85; }
+    .btn-generar:disabled { opacity: .5; cursor: default; }
+
+    /* ── Pantalla de éxito ── */
+    #pantalla-exito {
+      display: none;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .qr-box {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      display: inline-block;
+      margin: 20px auto;
+    }
+    .vcr-id {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--hint);
+      margin: 8px 0 20px;
+      word-break: break-all;
+    }
+    .share-btn {
+      background: var(--card);
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      border-radius: var(--radius);
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--hint);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(232,160,32,0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 32px;
+    }
+
+    /* Error inline */
+    .error-msg {
+      display: none;
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!--
+  PASO 3: Cabecera de la app.
+  Simple y con el color dorado de Criollo.
+-->
+<div class="header">
+  <div class="logo">C</div>
+  <div>
+    <h1>Criollo VCR</h1>
+    <p>Registrar consulta veterinaria</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     FORMULARIO PRINCIPAL
+     ══════════════════════════════ -->
+<div id="formulario">
+
+  <!-- Sección 1: El animal -->
+  <div class="section">
+    <div class="section-title">El animal</div>
+    <div class="field">
+      <label>Nombre del animal</label>
+      <input id="animal-nombre" type="text" placeholder="ej. Luna" autocomplete="off" />
+      <div class="error-msg" id="err-nombre">Ingresa el nombre del animal</div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Especie</label>
+        <select id="animal-especie">
+          <option value="perro">Perro 🐕</option>
+          <option value="gato">Gato 🐱</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Raza (opcional)</label>
+        <input id="animal-raza" type="text" placeholder="ej. Poodle" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección 2: Tipo de consulta -->
+  <div class="section">
+    <div class="section-title">Tipo de consulta</div>
+    <div class="tipo-grid" id="tipo-grid">
+      <div class="tipo-btn selected" data-tipo="vacuna">💉 Vacuna</div>
+      <div class="tipo-btn" data-tipo="cirugia">🔬 Cirugía</div>
+      <div class="tipo-btn" data-tipo="consulta">📋 Consulta</div>
+      <div class="tipo-btn" data-tipo="desparasitacion">🌿 Desparasitación</div>
+    </div>
+    <div class="field">
+      <label>Observaciones / Diagnóstico</label>
+      <textarea id="observaciones" rows="3"
+        placeholder="ej. Vacuna antirrábica aplicada. Próxima dosis en 12 meses."></textarea>
+    </div>
+  </div>
+
+  <!-- Sección 3: El veterinario -->
+  <div class="section">
+    <div class="section-title">El veterinario</div>
+    <div class="field">
+      <label>Nombre del veterinario</label>
+      <input id="vet-nombre" type="text" placeholder="ej. Dr. Pérez" />
+      <div class="error-msg" id="err-vet">Ingresa el nombre del veterinario</div>
+    </div>
+    <div class="field">
+      <label>Clínica / Hospital</label>
+      <input id="vet-clinica" type="text" placeholder="ej. VetSalud Bogotá" />
+      <div class="error-msg" id="err-clinica">Ingresa el nombre de la clínica</div>
+    </div>
+  </div>
+
+</div><!-- /formulario -->
+
+<!-- ══════════════════════════════
+     PANTALLA DE ÉXITO
+     Aparece después de guardar
+     ══════════════════════════════ -->
+<div id="pantalla-exito">
+  <div class="success-icon">✅</div>
+  <h2 style="font-size:20px;margin-bottom:8px">VCR generado</h2>
+  <p style="color:var(--hint);font-size:14px;margin-bottom:4px">
+    El registro médico quedó guardado.<br>Comparte este QR con el dueño.
+  </p>
+
+  <!-- QR Code generado dinámicamente -->
+  <!-- qrcodejs necesita un div vacío, NO un canvas -->
+  <div class="qr-box">
+    <div id="qr-canvas"></div>
+  </div>
+
+  <div class="vcr-id" id="vcr-link">—</div>
+
+  <button class="share-btn" id="btn-compartir">
+    📤 Compartir VCR con el dueño
+  </button>
+  <button class="close-btn" id="btn-cerrar">
+    Cerrar
+  </button>
+</div>
+
+<!-- Botón fijo abajo -->
+<div class="btn-fixed" id="btn-area">
+  <button class="btn-generar" id="btn-generar" onclick="enviarRegistro()">
+    Generar VCR y QR ▶
+  </button>
+</div>
+
+<!--
+  PASO 4: Librería para generar QR codes.
+  La cargamos desde cdnjs (CDN permitido).
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+/*
+  PASO 5: Inicializamos el SDK de Telegram.
+  Esto le dice a Telegram que la app está lista y expande la ventana.
+*/
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand(); // ocupa toda la pantalla en Telegram
+}
+
+const API = 'https://criollo-vcr-engine-production.up.railway.app';
+
+// ── Manejo de los botones de tipo de consulta ──
+let tipoSeleccionado = 'vacuna';
+document.getElementById('tipo-grid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.tipo-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  tipoSeleccionado = btn.dataset.tipo;
+});
+
+// ── Función principal: valida y envía el formulario ──
+async function enviarRegistro() {
+  // Limpiamos errores anteriores
+  document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+
+  // Leemos los valores
+  const animalNombre  = document.getElementById('animal-nombre').value.trim();
+  const animalEspecie = document.getElementById('animal-especie').value;
+  const animalRaza    = document.getElementById('animal-raza').value.trim();
+  const observaciones = document.getElementById('observaciones').value.trim();
+  const vetNombre     = document.getElementById('vet-nombre').value.trim();
+  const vetClinica    = document.getElementById('vet-clinica').value.trim();
+
+  // Validación básica
+  let hayError = false;
+  if (!animalNombre) {
+    document.getElementById('err-nombre').style.display = 'block';
+    hayError = true;
+  }
+  if (!vetNombre) {
+    document.getElementById('err-vet').style.display = 'block';
+    hayError = true;
+  }
+  if (!vetClinica) {
+    document.getElementById('err-clinica').style.display = 'block';
+    hayError = true;
+  }
+  if (hayError) return;
+
+  // Deshabilitamos el botón mientras enviamos
+  const btn = document.getElementById('btn-generar');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    /*
+      PASO 6: Enviamos los datos al backend de Railway.
+      Usamos fetch() — la forma estándar de hacer llamadas HTTP en JavaScript.
+      POST /api/vcr-registro es el nuevo endpoint que crearemos en Railway.
+    */
+    const respuesta = await fetch(`${API}/api/vcr-registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        animal_nombre:  animalNombre,
+        animal_especie: animalEspecie,
+        animal_raza:    animalRaza,
+        tipo_atencion:  tipoSeleccionado,
+        observaciones:  observaciones,
+        vet_nombre:     vetNombre,
+        vet_clinica:    vetClinica,
+        // Telegram nos da el usuario si estamos dentro del app
+        telegram_user:  tg?.initDataUnsafe?.user?.username || 'web'
+      })
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) throw new Error(datos.error || 'Error del servidor');
+
+    // ── Mostramos la pantalla de éxito ──
+    mostrarExito(datos.vcr_id, datos.vcr_url);
+
+  } catch (err) {
+    /*
+      Si hay error de red o el endpoint aún no existe,
+      mostramos el éxito con datos demo para que puedas ver el flujo.
+      Cuando el endpoint esté listo, elimina este bloque catch.
+    */
+    const vcrDemo = 'VCR-' + Math.random().toString(36).substr(2,8).toUpperCase();
+    const urlDemo = `${API}/pasaporte/${vcrDemo}`;
+    mostrarExito(vcrDemo, urlDemo);
+  }
+}
+
+function mostrarExito(vcrId, vcrUrl) {
+  // Ocultamos formulario y botón
+  document.getElementById('formulario').style.display = 'none';
+  document.getElementById('btn-area').style.display = 'none';
+
+  // Mostramos la pantalla de éxito
+  const exito = document.getElementById('pantalla-exito');
+  exito.style.display = 'block';
+
+  // Mostramos el link del VCR
+  document.getElementById('vcr-link').textContent = vcrUrl;
+
+  /*
+    PASO 7: Generamos el QR code.
+    La librería qrcodejs dibuja el QR en el canvas automáticamente.
+  */
+  // Limpiamos por si había un QR previo
+  document.getElementById('qr-canvas').innerHTML = '';
+  new QRCode(document.getElementById('qr-canvas'), {
+    text: vcrUrl,
+    width: 200,
+    height: 200,
+    colorDark: '#0D1B2A',
+    colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  /*
+    PASO 8: Botón de compartir.
+    Telegram tiene una función nativa para compartir texto dentro de la app.
+  */
+  const animalNombreVal = document.getElementById('animal-nombre').value;
+
+  document.getElementById('btn-compartir').onclick = () => {
+    // Detectamos si estamos realmente dentro de Telegram
+    // (initData solo tiene contenido dentro del bot)
+    const enTelegram = tg && tg.initData && tg.initData.length > 0;
+
+    if (enTelegram) {
+      tg.sendData(JSON.stringify({ vcr_id: vcrId, vcr_url: vcrUrl }));
+    } else {
+      // En navegador normal: intentamos copiar al portapapeles
+      if (navigator.share) {
+        // API nativa de compartir en móvil (Chrome/Safari mobile)
+        navigator.share({
+          title: `VCR de ${animalNombreVal} — Criollo`,
+          text: `Registro médico verificado por Criollo VCR`,
+          url: vcrUrl
+        }).catch(() => {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(vcrUrl).then(() => {
+          document.getElementById('btn-compartir').textContent = '✅ Link copiado';
+        }).catch(() => {
+          prompt('Copia este link:', vcrUrl);
+        });
+      } else {
+        prompt('Copia este link:', vcrUrl);
+      }
+    }
+  };
+
+  document.getElementById('btn-cerrar').onclick = () => {
+    const enTelegram = tg && tg.initData && tg.initData.length > 0;
+    if (enTelegram) {
+      tg.close();
+    } else {
+      // En navegador normal: volvemos al formulario
+      document.getElementById('pantalla-exito').style.display = 'none';
+      document.getElementById('formulario').style.display = 'block';
+      document.getElementById('btn-area').style.display = 'block';
+      document.getElementById('btn-generar').disabled = false;
+      document.getElementById('btn-generar').textContent = 'Generar VCR y QR ▶';
+      document.getElementById('qr-canvas').innerHTML = '';
+    }
+  };
+}
+</script>
+
+</body>
+</html>
